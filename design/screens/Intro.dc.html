@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Great Candor 퀵 리뷰 시작</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ffffff}a:hover{color:#ffffff}
+@keyframes arrow-slide{0%{transform:translateX(-12px);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateX(20px);opacity:0}}
+@media (prefers-reduced-motion: reduce){.arrow-move{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(to bottom left, #96C93E 0%, #00B09B 100%); color: #ffffff; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="LeaderName.dc.html" aria-label="리더명 정하기로 돌아가기" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">STEP 1 · Great Candor Review</span>
+<span style="width: 44px"></span>
+</header>
+<main style="flex: 1; padding: 24px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; text-align: center">
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #ffffff; word-break: keep-all"><span style="padding: 1px 8px; border-radius: 6px; background: #ffffff; color: #000000; font-weight: 700">{{ leaderName }}</span>님,</p>
+<h1 style="margin: 0; font-size: 30px; line-height: 1.35; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all">Great Candor를<br>퀵!하게 리뷰해 볼까요?</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #ffffff; word-break: keep-all">핵심 메시지 5개를 짧게 훑어보고,<br>기억에 남는 것을 골라요.</p>
+<p style="margin: 0; font-size: 13px; font-weight: 700; color: #ffffff">기억을 떠올리는 용도예요. 점수는 없어요.</p>
+</main>
+<div style="flex-shrink: 0; padding: 0 20px 16px; display: flex; flex-direction: column; align-items: center">
+<a href="Review.dc.html" aria-label="리뷰 시작하기" style="width: 120px; height: 64px; display: flex; align-items: center; justify-content: center; color: #ffffff"><span class="arrow-move" style="display: inline-flex; animation: arrow-slide 1.6s ease-in-out infinite"><svg width="64" height="32" viewBox="0 0 64 32" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16H58"></path><path d="M46 6L59 16L46 26"></path></svg></span></a>
+<span aria-hidden="true" style="height: 44px"></span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 배경] 안내·퀵 리뷰 시작·완료 세 화면은 Great Candor 포스터 배경과 같은 그라데이션: 오른쪽 위 #96C93E → 왼쪽 아래 #00B09B (CSS linear-gradient(to bottom left, #96C93E, #00B09B)). 글자·화살표·뒤로 가기 아이콘은 흰색(#ffffff). 하단 '다음' 버튼만 단색 #00B09B
+// 화면 폭 규칙의 예외: 이 화면들은 바깥 여백까지 브라우저 전체에 그라데이션을 칠한다. 모바일 상태 표시줄 색(meta theme-color)은 #96C93E
+// 리더명 토큰은 흰 배경 + 검정 굵은 글씨, 별명 토큰은 그대로(연녹색 배경·녹색 글자). 흰 카드·버튼 안 글자는 검정 유지
+// 명도 대비 주의: 흰 글자와 밝은 연두(#96C93E)는 대비가 낮다(WCAG AA 미달). 본문은 굵기 400 이상·16px 이상을 유지하고 13px 이하 글자는 굵게(700) 쓴다
+// [개발 명세] 리더명 표시: 회색 배경 #f0f0f0 + 검정 굵은 글씨, 모서리 6px(구성원 별명의 연녹색 표시와 구분)
+return { leaderName: '따뜻하고 솔직한 리더' };
+}
+}
+</script>
+</body>
+</html>

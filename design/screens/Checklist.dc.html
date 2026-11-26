@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>면담 스타일 점검하기 1</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#000000}a:hover{color:#444444}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: #000000; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Main.dc.html" aria-label="이전 화면" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">STEP 2 · 면담 스타일 점검</span>
+<span style="font-size: 12px; color: #676767">체크 1/5</span>
+</header>
+<div role="progressbar" aria-label="체크 진행" aria-valuemin="0" aria-valuemax="5" aria-valuenow="1" style="height: 4px; background: #e6e6e6; flex-shrink: 0"><div style="width: 20%; height: 4px; background: #000000"></div></div>
+<main style="flex: 1; padding: 28px 20px 24px; display: flex; flex-direction: column; gap: 32px; overflow: hidden">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-size: 13px; font-weight: 700; color: #676767">면담 오프닝</p>
+<h1 style="margin: 0; font-size: 26px; line-height: 1.35; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all"><strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과의<br>면담 오프닝을 떠올려 보세요</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #444444; word-break: keep-all">정답은 없어요. 기억나는 대로 답하면 돼요.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+<div style="padding: 16px; border-radius: 24px; background: #f7f7f7; display: flex; flex-direction: column; gap: 12px">
+<p style="margin: 0; font-size: 16px; line-height: 1.5; word-break: keep-all">{{ it.text }}</p>
+<div role="group" aria-label="{{ it.text }}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{ it.options }}" as="op" hint-placeholder-count="2">
+<button type="button" onClick="{{ op.pick }}" aria-pressed="{{ op.pressed }}" style="{{ op.style }}">{{ op.label }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ it.hasNa }}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{ it.pickNa }}" aria-pressed="{{ it.naPressed }}" data-track="checklist_na" style="{{ it.naStyle }}"><span style="{{ it.naDot }}"></span>{{ it.naLabel }}</button>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</main>
+<div style="padding: 12px 20px 20px; border-top: 1px solid #e6e6e6; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0">
+<sc-if value="{{ allDone }}" hint-placeholder-val="{{ true }}">
+<a href="Checklist2.dc.html" style="height: 48px; border-radius: 24px; background: #00B09B; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">다음</a>
+</sc-if>
+<sc-if value="{{ notDone }}" hint-placeholder-val="{{ false }}">
+<span aria-disabled="true" style="height: 48px; border-radius: 24px; background: #e6e6e6; color: #8f8f8f; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">다음</span>
+<p style="margin: 6px 0 0; text-align: center; font-size: 12px; color: #676767">이 페이지의 문항에 모두 답해 주세요.</p>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 다음 버튼 색] 하단 주 버튼('다음', '결과 보기', '꼭 해야 하는 말 정하기', '완료' 등)은 단색 #00B09B + 흰 굵은 글씨(그라데이션 없음). 막힌 상태는 회색(#e6e6e6 배경, #8f8f8f 글자)으로 구분. 진행 막대·선택된 답 칩은 검정 유지
+const opts = ['했어요', '못 했어요'];
+// 해당 없음은 상황이 없을 수 있는 문항에만, 그 조건을 그대로 적은 보조 선택지로 둔다(같은 group은 함께 선택)
+const na = [null, null, null];
+const texts = ["가벼운 도입으로 시작했다", "면담 흐름을 먼저 설명했다", "구성원이 먼저 설명하게 했다"];
+const ans = (this.state && this.state.ans) || {};
+const base = 'min-height: 44px; padding: 0 4px; border-radius: 22px; font-family: inherit; font-size: 14px; cursor: pointer; ';
+const done = texts.every((t, i) => !!ans[i]);
+return {
+allDone: done,
+notDone: !done,
+items: texts.map((text, ii) => ({
+text: text,
+hasNa: !!na[ii],
+naLabel: na[ii] ? na[ii].label : '',
+naPressed: ans[ii] === '해당 없음' ? 'true' : 'false',
+naStyle: 'align-self: flex-start; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; cursor: pointer; ' + (ans[ii] === '해당 없음' ? 'color: #000000; font-weight: 700' : 'color: #676767'),
+naDot: 'width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; flex-shrink: 0; ' + (ans[ii] === '해당 없음' ? 'border: 5px solid #000000' : 'border: 1.5px solid #d2d2d2'),
+pickNa: () => { const next = Object.assign({}, ans); na.forEach((g, k) => { if (g && na[ii] && g.group === na[ii].group) next[k] = '해당 없음'; }); this.setState({ ans: next }); },
+options: opts.map((label) => {
+const sel = ans[ii] === label;
+return {
+label: label,
+pressed: sel ? 'true' : 'false',
+style: base + (sel ? 'border: 1px solid #000000; background: #000000; color: #ffffff; font-weight: 700' : 'border: 1px solid #d2d2d2; background: #ffffff; color: #000000'),
+pick: () => { const next = Object.assign({}, ans); next[ii] = label; this.setState({ ans: next }); }
+};
+})
+}))
+};
+}
+}
+</script>
+</body>
+</html>

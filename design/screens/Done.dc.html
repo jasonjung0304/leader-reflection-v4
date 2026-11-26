@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>리플렉션 완료</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ffffff}a:hover{color:#ffffff}
+@keyframes arrow-slide{0%{transform:translateX(-12px);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateX(20px);opacity:0}}
+@media (prefers-reduced-motion: reduce){.arrow-move{animation:none !important}}
+@keyframes confetti-fall-a{0%{transform:translate3d(0,-40px,0) rotate(0deg);opacity:1}80%{opacity:1}100%{transform:translate3d(36px,880px,0) rotate(540deg);opacity:0}}
+@keyframes confetti-fall-b{0%{transform:translate3d(0,-40px,0) rotate(0deg);opacity:1}80%{opacity:1}100%{transform:translate3d(-36px,880px,0) rotate(-480deg);opacity:0}}
+@media (prefers-reduced-motion: reduce){[data-confetti]{display:none !important}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(to bottom left, #96C93E 0%, #00B09B 100%); color: #ffffff; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Action.dc.html" aria-label="이전 화면" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+
+<span style="width: 44px"></span>
+</header>
+<main style="flex: 1; padding: 24px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; text-align: center">
+<p style="margin: 0; font-size: 13px; font-weight: 700; color: #ffffff">팀장 리더십 리플렉션 완료</p>
+<h1 style="margin: 0; font-size: 30px; line-height: 1.35; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all"><span style="display: block; margin-bottom: 6px; font-size: 22px; line-height: 1.4; letter-spacing: -0.02em"><span style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #ffffff; color: #000000; font-weight: 700">[리더명]</span>님,</span>수고하셨어요</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #ffffff; word-break: keep-all"><strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과의 다음 면담에서<br>꼭 해야 하는 말</p>
+<p style="margin: 0; width: 100%; box-sizing: border-box; padding: 18px 20px; border-radius: 24px; background: #ffffff; color: #000000; font-size: 16px; line-height: 1.6; word-break: keep-all">“지난 면담에서 제가 충분히 듣지 못한 것 같아 마음에 걸렸어요. 아쉬웠던 부분을 이번엔 끝까지 들어 볼게요.”</p>
+<p style="margin: 4px 0 0; font-size: 13px; line-height: 1.5; font-weight: 400; color: #ffffff; word-break: keep-all">이 화면을 닫으면 결과를 다시 볼 수 없어요.<br>나에게 보내 두면 다음 면담 전에 다시 볼 수 있어요.</p>
+<div role="group" aria-label="완료 후 할 일" style="width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px"><a href="Main.dc.html" data-track="another_member_started" aria-label="다른 구성원 점검하기" style="height: 88px; border-radius: 16px; border: 0; background: transparent; color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-sizing: border-box; padding: 0 6px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg><span style="line-height: 1.35; word-break: keep-all">다른 구성원<br>점검하기</span></a><button type="button" data-track="result_share_opened" aria-label="[별명]님과의 결과 나에게 보내기" style="height: 88px; border-radius: 16px; border: 0; background: transparent; color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-sizing: border-box; padding: 0 6px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"></path><path d="M7 9l5-5 5 5"></path><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"></path></svg><span style="line-height: 1.35; word-break: keep-all">나에게<br>결과 보내기</span></button><button type="button" data-track="recommend_opened" aria-label="동료 리더에게 이 리플렉션 추천하기" style="height: 88px; border-radius: 16px; border: 0; background: transparent; color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-sizing: border-box; padding: 0 6px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10 14"></path><path d="M21 3l-7 18-4-7-7-4 18-7z"></path></svg><span style="line-height: 1.35; word-break: keep-all">동료에게<br>추천하기</span></button></div>
+</main>
+<div data-confetti="" aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2">
+<span style="position: absolute; top: -16px; left: 1.9%; width: 9px; height: 5px; border-radius: 2px; background: #FF5A5F; opacity: 0; animation: confetti-fall-a 2.09s cubic-bezier(.3,.5,.6,1) 0.39s 1 forwards"></span>
+<span style="position: absolute; top: -15px; left: 4.5%; width: 9px; height: 5px; border-radius: 2px; background: #9B5DE5; opacity: 0; animation: confetti-fall-b 1.55s cubic-bezier(.3,.5,.6,1) 0.4s 1 forwards"></span>
+<span style="position: absolute; top: -10px; left: 7.3%; width: 8px; height: 8px; border-radius: 50%; background: #00A651; opacity: 0; animation: confetti-fall-a 1.64s cubic-bezier(.3,.5,.6,1) 0.05s 1 forwards"></span>
+<span style="position: absolute; top: -25px; left: 8.0%; width: 7px; height: 7px; border-radius: 2px; background: #000000; opacity: 0; animation: confetti-fall-b 1.92s cubic-bezier(.3,.5,.6,1) 0.31s 1 forwards"></span>
+<span style="position: absolute; top: -23px; left: 12.2%; width: 9px; height: 5px; border-radius: 2px; background: #3D8BFD; opacity: 0; animation: confetti-fall-a 1.45s cubic-bezier(.3,.5,.6,1) 0.02s 1 forwards"></span>
+<span style="position: absolute; top: -23px; left: 14.6%; width: 7px; height: 7px; border-radius: 50%; background: #FF6FB5; opacity: 0; animation: confetti-fall-b 1.87s cubic-bezier(.3,.5,.6,1) 0.1s 1 forwards"></span>
+<span style="position: absolute; top: -17px; left: 17.2%; width: 7px; height: 7px; border-radius: 50%; background: #00703C; opacity: 0; animation: confetti-fall-a 1.47s cubic-bezier(.3,.5,.6,1) 0.33s 1 forwards"></span>
+<span style="position: absolute; top: -23px; left: 20.7%; width: 6px; height: 10px; border-radius: 2px; background: #FFC93C; opacity: 0; animation: confetti-fall-b 1.97s cubic-bezier(.3,.5,.6,1) 0.16s 1 forwards"></span>
+<span style="position: absolute; top: -18px; left: 21.7%; width: 6px; height: 10px; border-radius: 2px; background: #FF8C42; opacity: 0; animation: confetti-fall-a 1.46s cubic-bezier(.3,.5,.6,1) 0.38s 1 forwards"></span>
+<span style="position: absolute; top: -30px; left: 23.0%; width: 5px; height: 12px; border-radius: 2px; background: #2EC4B6; opacity: 0; animation: confetti-fall-b 1.71s cubic-bezier(.3,.5,.6,1) 0.48s 1 forwards"></span>
+<span style="position: absolute; top: -18px; left: 25.8%; width: 6px; height: 10px; border-radius: 2px; background: #FF5A5F; opacity: 0; animation: confetti-fall-a 1.78s cubic-bezier(.3,.5,.6,1) 0.49s 1 forwards"></span>
+<span style="position: absolute; top: -22px; left: 28.8%; width: 9px; height: 5px; border-radius: 2px; background: #9B5DE5; opacity: 0; animation: confetti-fall-b 1.9s cubic-bezier(.3,.5,.6,1) 0.39s 1 forwards"></span>
+<span style="position: absolute; top: -27px; left: 31.0%; width: 5px; height: 12px; border-radius: 2px; background: #00A651; opacity: 0; animation: confetti-fall-a 1.67s cubic-bezier(.3,.5,.6,1) 0.48s 1 forwards"></span>
+<span style="position: absolute; top: -15px; left: 32.9%; width: 6px; height: 10px; border-radius: 2px; background: #000000; opacity: 0; animation: confetti-fall-b 1.41s cubic-bezier(.3,.5,.6,1) 0.23s 1 forwards"></span>
+<span style="position: absolute; top: -26px; left: 35.5%; width: 9px; height: 5px; border-radius: 2px; background: #3D8BFD; opacity: 0; animation: confetti-fall-a 1.55s cubic-bezier(.3,.5,.6,1) 0.25s 1 forwards"></span>
+<span style="position: absolute; top: -22px; left: 38.7%; width: 7px; height: 7px; border-radius: 50%; background: #FF6FB5; opacity: 0; animation: confetti-fall-b 1.74s cubic-bezier(.3,.5,.6,1) 0.11s 1 forwards"></span>
+<span style="position: absolute; top: -24px; left: 42.5%; width: 9px; height: 5px; border-radius: 2px; background: #00703C; opacity: 0; animation: confetti-fall-a 1.64s cubic-bezier(.3,.5,.6,1) 0.44s 1 forwards"></span>
+<span style="position: absolute; top: -26px; left: 42.9%; width: 9px; height: 5px; border-radius: 2px; background: #FFC93C; opacity: 0; animation: confetti-fall-b 1.91s cubic-bezier(.3,.5,.6,1) 0.05s 1 forwards"></span>
+<span style="position: absolute; top: -21px; left: 45.4%; width: 5px; height: 12px; border-radius: 2px; background: #FF8C42; opacity: 0; animation: confetti-fall-a 1.41s cubic-bezier(.3,.5,.6,1) 0.31s 1 forwards"></span>
+<span style="position: absolute; top: -23px; left: 48.4%; width: 6px; height: 10px; border-radius: 2px; background: #2EC4B6; opacity: 0; animation: confetti-fall-b 1.47s cubic-bezier(.3,.5,.6,1) 0.29s 1 forwards"></span>
+<span style="position: absolute; top: -12px; left: 49.8%; width: 5px; height: 12px; border-radius: 2px; background: #FF5A5F; opacity: 0; animation: confetti-fall-a 1.7s cubic-bezier(.3,.5,.6,1) 0.23s 1 forwards"></span>
+<span style="position: absolute; top: -10px; left: 53.6%; width: 9px; height: 5px; border-radius: 2px; background: #9B5DE5; opacity: 0; animation: confetti-fall-b 1.51s cubic-bezier(.3,.5,.6,1) 0.19s 1 forwards"></span>
+<span style="position: absolute; top: -10px; left: 55.1%; width: 8px; height: 8px; border-radius: 2px; background: #00A651; opacity: 0; animation: confetti-fall-a 1.6s cubic-bezier(.3,.5,.6,1) 0.09s 1 forwards"></span>
+<span style="position: absolute; top: -28px; left: 59.9%; width: 8px; height: 8px; border-radius: 2px; background: #000000; opacity: 0; animation: confetti-fall-b 1.71s cubic-bezier(.3,.5,.6,1) 0.24s 1 forwards"></span>
+<span style="position: absolute; top: -22px; left: 60.8%; width: 6px; height: 10px; border-radius: 2px; background: #3D8BFD; opacity: 0; animation: confetti-fall-a 1.49s cubic-bezier(.3,.5,.6,1) 0.26s 1 forwards"></span>
+<span style="position: absolute; top: -21px; left: 62.8%; width: 7px; height: 7px; border-radius: 50%; background: #FF6FB5; opacity: 0; animation: confetti-fall-b 2.06s cubic-bezier(.3,.5,.6,1) 0.3s 1 forwards"></span>
+<span style="position: absolute; top: -10px; left: 66.1%; width: 6px; height: 10px; border-radius: 2px; background: #00703C; opacity: 0; animation: confetti-fall-a 1.5s cubic-bezier(.3,.5,.6,1) 0.24s 1 forwards"></span>
+<span style="position: absolute; top: -24px; left: 69.5%; width: 9px; height: 5px; border-radius: 2px; background: #FFC93C; opacity: 0; animation: confetti-fall-b 1.46s cubic-bezier(.3,.5,.6,1) 0.11s 1 forwards"></span>
+<span style="position: absolute; top: -29px; left: 71.7%; width: 6px; height: 10px; border-radius: 2px; background: #FF8C42; opacity: 0; animation: confetti-fall-a 1.62s cubic-bezier(.3,.5,.6,1) 0.22s 1 forwards"></span>
+<span style="position: absolute; top: -26px; left: 72.0%; width: 5px; height: 12px; border-radius: 2px; background: #2EC4B6; opacity: 0; animation: confetti-fall-b 1.7s cubic-bezier(.3,.5,.6,1) 0.29s 1 forwards"></span>
+<span style="position: absolute; top: -14px; left: 74.6%; width: 8px; height: 8px; border-radius: 2px; background: #FF5A5F; opacity: 0; animation: confetti-fall-a 2.18s cubic-bezier(.3,.5,.6,1) 0.33s 1 forwards"></span>
+<span style="position: absolute; top: -19px; left: 78.6%; width: 8px; height: 8px; border-radius: 50%; background: #9B5DE5; opacity: 0; animation: confetti-fall-b 2.14s cubic-bezier(.3,.5,.6,1) 0.24s 1 forwards"></span>
+<span style="position: absolute; top: -15px; left: 81.4%; width: 6px; height: 10px; border-radius: 2px; background: #00A651; opacity: 0; animation: confetti-fall-a 1.42s cubic-bezier(.3,.5,.6,1) 0.32s 1 forwards"></span>
+<span style="position: absolute; top: -28px; left: 81.9%; width: 5px; height: 12px; border-radius: 2px; background: #000000; opacity: 0; animation: confetti-fall-b 1.66s cubic-bezier(.3,.5,.6,1) 0.5s 1 forwards"></span>
+<span style="position: absolute; top: -26px; left: 85.6%; width: 5px; height: 12px; border-radius: 2px; background: #3D8BFD; opacity: 0; animation: confetti-fall-a 1.99s cubic-bezier(.3,.5,.6,1) 0.45s 1 forwards"></span>
+<span style="position: absolute; top: -28px; left: 89.0%; width: 5px; height: 12px; border-radius: 2px; background: #FF6FB5; opacity: 0; animation: confetti-fall-b 1.68s cubic-bezier(.3,.5,.6,1) 0.34s 1 forwards"></span>
+<span style="position: absolute; top: -30px; left: 91.7%; width: 7px; height: 7px; border-radius: 2px; background: #00703C; opacity: 0; animation: confetti-fall-a 1.42s cubic-bezier(.3,.5,.6,1) 0.25s 1 forwards"></span>
+<span style="position: absolute; top: -28px; left: 93.5%; width: 7px; height: 7px; border-radius: 50%; background: #FFC93C; opacity: 0; animation: confetti-fall-b 1.41s cubic-bezier(.3,.5,.6,1) 0.04s 1 forwards"></span>
+<span style="position: absolute; top: -18px; left: 96.0%; width: 5px; height: 12px; border-radius: 2px; background: #FF8C42; opacity: 0; animation: confetti-fall-a 2.1s cubic-bezier(.3,.5,.6,1) 0.36s 1 forwards"></span>
+<span style="position: absolute; top: -13px; left: 99.3%; width: 9px; height: 5px; border-radius: 2px; background: #2EC4B6; opacity: 0; animation: confetti-fall-b 1.77s cubic-bezier(.3,.5,.6,1) 0.23s 1 forwards"></span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 배경] 안내·퀵 리뷰 시작·완료 세 화면은 Great Candor 포스터 배경과 같은 그라데이션: 오른쪽 위 #96C93E → 왼쪽 아래 #00B09B (CSS linear-gradient(to bottom left, #96C93E, #00B09B)). 글자·화살표·뒤로 가기 아이콘은 흰색(#ffffff). 하단 '다음' 버튼만 단색 #00B09B
+// 화면 폭 규칙의 예외: 이 화면들은 바깥 여백까지 브라우저 전체에 그라데이션을 칠한다. 모바일 상태 표시줄 색(meta theme-color)은 #96C93E
+// 리더명 토큰은 흰 배경 + 검정 굵은 글씨, 별명 토큰은 그대로(연녹색 배경·녹색 글자). 흰 카드·버튼 안 글자는 검정 유지
+// 명도 대비 주의: 흰 글자와 밝은 연두(#96C93E)는 대비가 낮다(WCAG AA 미달). 본문은 굵기 400 이상·16px 이상을 유지하고 13px 이하 글자는 굵게(700) 쓴다
+// [결정 2026-11-25 · 이름 부르기] 제목은 '[리더명]님, 수고하셨어요'. 리더명 화면에서 고르거나 직접 쓴 이름을 그대로 넣고 회색 리더명 토큰(#f0f0f0 배경, 검정 굵게)으로 표시. 직접 쓴 이름이 '리더'로 끝나지 않으면 뒤에 ' 리더'를 붙여 부른다(예: 묻고 듣는 → 묻고 듣는 리더님). 이 규칙은 리더명을 부르는 모든 화면(퀵 리뷰 시작, 결과 1)에 공통
+// [결정 2026-11-25 · 단순화] 3칸 버튼은 상자(흰 배경)를 없애고 흰 아이콘(28px) + 흰 굵은 글씨만 둔다. 누를 수 있는 영역은 칸 전체(높이 88px) 유지. 눌렀을 때·키보드 포커스 시 흰색 12% 배경으로 반응
+// [결정 2026-11-25] 완료 화면 버튼은 한 줄 3칸(같은 크기, 한 번 누르면 바로 실행), 왼쪽부터 '다른 구성원 점검하기' / '나에게 결과 보내기' / '동료에게 추천하기'. 이름은 두 줄로 고정 표시
+// [개발 명세 · 다른 구성원 점검하기] 다른 구성원으로 새 점검을 시작(구성원 떠올리기로 이동, 별명·상황은 비운 상태). 횟수 제한 없음. 기록 another_member_started
+// [개발 명세 · 동료에게 추천하기] 결과는 보내지 않고 링크만 보낸다(이름에 '결과'를 넣지 않은 이유). 다른 팀장에게 이 리플렉션 링크를 보낸다. navigator.share({ title, text, url }) — 파일 없이 링크만. url = 운영 주소 + 입장 키 + ref=recommend
+//   보낼 문장(content.json → done.recommend_text): 'GC Review 면담을 돌아보는 팀장 리더십 리플렉션이에요. 약 {n}분이면 끝나요.' 리더명·별명·결과는 넣지 않는다
+//   공유 창 미지원(주로 PC): 링크를 클립보드에 복사하고 '링크를 복사했어요' 알림(2초)
+//   기록: recommend_opened / recommend_shared(성공) / recommend_cancelled(AbortError) / recommend_copied. ref=recommend 로 들어온 첫 방문은 visit_from_recommend(기기 ID)로 기록
+//   주의: 링크에 입장 키가 들어 있으므로 받은 사람이 다시 전달하면 대상 밖으로 퍼질 수 있다. 문제가 생기면 설정에서 입장 키를 바꾼다
+// [개발 명세] 완료 화면에 '결과 다시 보기'는 두지 않는다. 결과 확인은 상단 뒤로 가기(실천 → 결과 3 → 2 → 1)와 PDF로. 지난 점검 기록은 두지 않는다
+// [개발 명세 · 나에게 결과 보내기] 버튼을 누르면 결과 PDF를 만들어 기기 기본 공유 창(Web Share API, navigator.share + files)에 띄운다. 리더가 카카오톡 나와의 채팅·Teams·메일·파일 앱 중 선택
+// 카카오톡·Teams 전용 연동(SDK, 링크 공유)은 쓰지 않는다. 결과를 서버에 남기지 않기 위해서다
+// 공유 창을 지원하지 않는 브라우저(주로 PC)에서는 PDF 다운로드로 자동 전환하고 칸 이름을 '나에게 / 결과 PDF 저장'으로 바꾼다
+// 기록: 공유 창 열림 result_share_opened / navigator.share()가 성공하면 result_shared / 취소(AbortError)하면 result_share_cancelled / PDF 다운로드 result_pdf_saved. 어느 앱으로 보냈는지는 알 수 없으므로 기록하지 않는다
+// 화면 문구에는 메신저 이름을 쓰지 않는다('나에게 보내 두면')
+// [개발 명세] 완료 화면 진입 시 꽃가루가 한 번만 떨어진다(약 2~3초, 반복 없음, 10가지 색). 화면 동작 줄이기 설정(prefers-reduced-motion) 사용자에게는 보이지 않는다
+// [개발 명세] PDF에는 리더명, 별명, 결과 1~3, 꼭 해야 하는 말을 모두 넣는다(판단 근거는 넣지 않음)
+// [개발 명세] 꼭 해야 하는 말 자리에는 실천 1개에서 고른 문장이 들어간다. '직접 쓸게요'를 골랐으면 직접 쓴 문장을 그대로 표시하고 PDF에도 같은 문장을 넣는다
+return {};
+}
+}
+</script>
+</body>
+</html>

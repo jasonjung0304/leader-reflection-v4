@@ -1,0 +1,45 @@
+{"name":"GC녹십자 HR","version":1,
+"color":{"themes":[{"id":"light","name":"Light"}],
+"tokens":[
+{"name":"surface","value":"#ffffff","usage":"페이지·슬라이드 기본 바탕. 화면 면적의 대부분을 차지한다."},
+{"name":"surface-subtle","value":"#f7f7f7","usage":"구획 구분용 옅은 회색 면, 기본 카드 배경. 그림자·테두리와 동시에 쓰지 않는다."},
+{"name":"surface-stage","value":"#f2f0f9","usage":"대표 그림(결과 카드 겹침) 아래만 물드는 무대 색. surface에서 이 색으로 내려가는 세로 전환에만 쓴다."},
+{"name":"ink","value":"#000000","usage":"제목·본문 기본 글자색, Primary CTA 배경, 포커스 링. surface 위 21:1."},
+{"name":"ink-secondary","value":"#444444","usage":"설명문·리드 문장. surface 위 9.7:1, surface-subtle 위 9.1:1."},
+{"name":"ink-tertiary","value":"#676767","usage":"비선택 탭, 캡션, 각주. surface 위 5.7:1."},
+{"name":"ink-disabled","value":"#8f8f8f","usage":"비활성 컨트롤·placeholder 전용(3.3:1). 설명문 색으로 쓰지 않는다."},
+{"name":"border","value":"#d2d2d2","usage":"입력창·Outline 카드 테두리, 단계 번호 원."},
+{"name":"border-subtle","value":"#e6e6e6","usage":"헤더 하단선, FAQ·목록 구분선, 탭 바닥선."},
+{"name":"error","value":"#b22e22","usage":"입력 오류 테두리·문구 전용. surface 위 6.4:1. 장식·강조에 쓰지 않는다."}
+]},
+"type":{"fonts":[],
+"families":{"sans":"\"Noto Sans KR\", \"Malgun Gothic\", \"Apple SD Gothic Neo\", system-ui, sans-serif"},
+"groups":[
+{"name":"Headings","family":"sans","styles":[
+{"name":"display","fontSize":"60px","lineHeight":"1.2","fontWeight":700,"letterSpacing":"-0.02em"},
+{"name":"h1","fontSize":"48px","lineHeight":"1.2","fontWeight":700,"letterSpacing":"-0.025em"},
+{"name":"h2","fontSize":"38px","lineHeight":"1.2","fontWeight":700,"letterSpacing":"-0.025em"},
+{"name":"h3","fontSize":"32px","lineHeight":"1.2","fontWeight":700,"letterSpacing":"-0.02em"}]},
+{"name":"Text","family":"sans","styles":[
+{"name":"body-lg","fontSize":"18px","lineHeight":"1.6","fontWeight":400,"letterSpacing":"-0.01em"},
+{"name":"body","fontSize":"16px","lineHeight":"1.6","fontWeight":400,"letterSpacing":"-0.01em"},
+{"name":"body-sm","fontSize":"14px","lineHeight":"1.5","fontWeight":400},
+{"name":"button","fontSize":"14px","lineHeight":"19px","fontWeight":700},
+{"name":"caption","fontSize":"12px","lineHeight":"1.5","fontWeight":400}]}]},
+"spacing":{"tokens":[
+{"name":"space-1","value":"4px","usage":"기본 단위. 아이콘과 글자 사이."},
+{"name":"space-2","value":"8px","usage":"버튼 내부 아이콘 간격, 라벨과 입력창 사이."},
+{"name":"space-4","value":"16px","usage":"제목과 설명 사이."},
+{"name":"space-6","value":"24px","usage":"설명과 그림 사이, 모바일 좌우 여백 근처."},
+{"name":"space-8","value":"32px","usage":"컨테이너 좌우 거터, 카드 내부 여백."},
+{"name":"space-10","value":"40px","usage":"본문 블록과 주요 CTA 사이."},
+{"name":"space-16","value":"64px","usage":"구획 사이 기본 간격."},
+{"name":"space-20","value":"80px","usage":"큰 구획 전환(표지 → 본문)."}]},
+"radius":{"tokens":[
+{"name":"radius-sm","value":"4px","usage":"배지·태그."},
+{"name":"radius-md","value":"8px","usage":"입력창. 버튼과 곡률을 구분한다."},
+{"name":"radius-cta","value":"20px","usage":"높이 40px 버튼의 알약형. 글이 길어져도 유지."},
+{"name":"radius-xl","value":"24px","usage":"미디어 패널, 결과 카드 겹침의 무대."}]},
+"shadow":{"tokens":[
+{"name":"shadow-none","value":"none","usage":"페이지·헤더·버튼·일반 카드 기본값."},
+{"name":"shadow-lift","value":"0 16px 32px rgba(20,24,48,.15)","usage":"겹친 결과 카드 중 맨 앞 한 장에만. UI 카드에 반복하지 않는다."}]}}

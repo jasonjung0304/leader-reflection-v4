@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>결과 분석 중</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ffffff}a:hover{color:#dddddd}
+@keyframes count-pop{0%{opacity:0;transform:scale(1.45)}18%{opacity:1;transform:scale(1)}82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.85)}}
+@keyframes count-plain{0%{opacity:1}99%{opacity:1}100%{opacity:0}}
+@keyframes fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;animation:count-pop .6s ease-out both}
+@media (prefers-reduced-motion: reduce){.count{animation-name:count-plain !important}.fade{animation:none !important;opacity:1 !important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #000000; color: #ffffff; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+<span style="font-size: 14px; font-weight: 700; color: #ffffff">STEP 2 · 면담 스타일 점검</span>
+</header>
+<main aria-live="polite" style="flex: 1; padding: 24px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; text-align: center">
+<div aria-hidden="true" style="position: relative; width: 140px; height: 140px; border-radius: 70px; background: #1f1f1f; font-size: 72px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: #ffffff">
+<span class="count" style="animation-delay: 0s">5</span>
+<span class="count" style="animation-delay: .6s">4</span>
+<span class="count" style="animation-delay: 1.2s">3</span>
+<span class="count" style="animation-delay: 1.8s">2</span>
+<span class="count" style="animation-delay: 2.4s">1</span>
+<span class="fade" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; animation: fade-in .3s ease-out 3s both"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+</div>
+<h1 style="margin: 0; font-size: 30px; line-height: 1.35; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all; color: #ffffff">결과를<br>정리하고 있어요</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #c8c8c8; word-break: keep-all"><strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과의 면담을<br>Great Candor 기준에 맞춰 보고 있어요.</p>
+<a href="Result3.dc.html" class="fade" style="margin-top: 8px; min-height: 48px; padding: 0 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; color: #a0a0a0; opacity: 0; animation: fade-in .4s ease-out 3s both">자동으로 넘어가요</a>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 카운트다운] 점 세 개 대신 5→1 카운트다운. 숫자 하나에 0.6초, 총 3초. 1이 사라지면 결과 1로 자동 이동(결과 계산은 그 사이에 끝냄)
+// [결정 2026-11-25 · 색 반전] 이 화면만 검정 배경(#000000) + 흰 글자. 숫자·체크는 흰색(#ffffff), 원은 #1f1f1f, 보조 문장 #c8c8c8. 별명 토큰은 그대로(연녹색 배경·녹색 글자)
+// 화면 폭 규칙의 예외: 이 화면은 바깥 여백까지 브라우저 전체를 검정으로 칠한다(PC에서 가운데 480px만 검정이면 상자처럼 보이므로). 모바일 상태 표시줄 색(meta theme-color)도 이 화면 동안 #000000
+// 다음 화면(결과 1)은 검정에서 흰 화면으로 페이드인한다(결과 1 명세 참조)
+// 숫자: 72px 굵게, 흰색, 짙은 회색 원(140px) 안 가운데. 바뀔 때마다 커졌다가 제자리로 줄어드는 효과(count-pop). 동작 줄이기 설정이면 크기 효과 없이 숫자만 바뀜
+// 숫자는 화면 읽기 프로그램에 읽히지 않게(aria-hidden). 화면 읽기 프로그램에는 '결과를 정리하고 있어요' 문장만 한 번 전달
+// 같은 점검에서 결과 화면에서 뒤로 가기로 돌아올 때는 이 화면을 건너뛴다(체크 5로 이동)
+// 1이 사라진 뒤 결과 1로 넘어가기 직전 체크 표시(✓)가 잠깐 나타난다
+// 캔버스에서는 자동 이동이 안 되어 3초 뒤 회색 '자동으로 넘어가요' 링크로 대신함
+return {};
+}
+}
+</script>
+</body>
+</html>

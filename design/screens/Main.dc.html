@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>구성원 한 명 떠올리기</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#000000}a:hover{color:#444444}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: #000000; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Keyword.dc.html" aria-label="키워드 선택으로 돌아가기" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">STEP 2 · 면담 스타일 점검</span>
+<span style="width: 44px"></span>
+</header>
+<main style="flex: 1; padding: 24px 20px 16px; display: flex; flex-direction: column; gap: 24px; overflow: hidden">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; font-size: 28px; line-height: 1.3; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all">면담한 구성원 중&nbsp;<br>한 명을 떠올려 볼까요?</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #444444; word-break: keep-all">가장 마음에 남은 구성원 한 명이면 돼요. <br>이름 대신 나만 알아볼 별명으로 적어 주세요.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="nick" style="font-size: 14px; font-weight: 700">별명</label>
+<div style="display: flex; gap: 8px">
+<input id="nick" type="text" maxlength="20" value="{{ nick }}" onChange="{{ onNick }}" placeholder="별명을 적거나 자동 생성을 눌러 주세요" style="flex: 1; min-width: 0; height: 48px; box-sizing: border-box; border-radius: 8px; border: 1px solid #d2d2d2; padding: 0 14px; font-family: inherit; font-size: 16px; color: #00703C; font-weight: 700">
+<button type="button" onClick="{{ regen }}" aria-label="별명 자동 생성" style="height: 48px; padding: 0 14px; border-radius: 24px; border: 1px solid #000000; background: #ffffff; color: #000000; font-family: inherit; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 5v6h-6"></path></svg>자동 생성</button>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 1.5; color: #676767; word-break: keep-all">별명을 바꾸려면 자동 생성을 누르거나 직접 적어 주세요. <br>실명, 사번, 직급은 적지 말아 주세요.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 14px; font-weight: 700">어떤 면담이었나요?</h2>
+<p style="margin: 0; font-size: 12px; color: #676767">해당하는 것을 모두 골라 주세요. 다음 면담 조언에 반영돼요.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{ situations }}" as="item" hint-placeholder-count="8">
+<button type="button" onClick="{{ item.toggle }}" aria-pressed="{{ item.pressed }}" style="{{ item.style }}">{{ item.label }}</button>
+</sc-for>
+</div>
+</div>
+</main>
+<div style="padding: 12px 20px 20px; border-top: 1px solid #e6e6e6; flex-shrink: 0">
+<sc-if value="{{ canStart }}" hint-placeholder-val="{{ true }}">
+<a href="Checklist.dc.html" style="height: 48px; border-radius: 24px; background: #00B09B; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">다음</a>
+</sc-if>
+<sc-if value="{{ cannotStart }}" hint-placeholder-val="{{ false }}">
+<span aria-disabled="true" style="height: 48px; border-radius: 24px; background: #e6e6e6; color: #8f8f8f; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">다음</span>
+
+</sc-if>
+<p style="margin: 6px 0 0; text-align: center; font-size: 12px; color: #676767">이 페이지의 문항에 모두 답해 주세요.</p></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+makeNick() {
+const adj = ['반짝이는', '느긋한', '포근한', '노래하는', '춤추는', '졸린', '배고픈', '신난', '수줍은', '용감한', '다정한', '명랑한', '상냥한', '씩씩한', '차분한', '엉뚱한', '동그란', '푸른', '말랑한', '날렵한'];
+const place = ['바닷가', '숲속', '산골', '강가', '사막', '구름 위', '정원', '도서관', '골목', '초원', '호숫가', '섬마을', '언덕', '북극', '열대', '우주', '동굴', '들판', '시냇가', '다락방'];
+const animal = ['수달', '다람쥐', '고슴도치', '펭귄', '판다', '코알라', '부엉이', '돌고래', '여우', '토끼', '거북이', '너구리', '알파카', '미어캣', '고래', '햄스터', '오리', '기린', '카피바라', '참새'];
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+return pick(adj) + ' ' + pick(place) + ' ' + pick(animal);
+}
+// [개발 명세 · 이어 하기] 페이지마다 '다음'을 누를 때 서버 저장. STEP 1은 참여자 ID당 1번(끝낸 사람은 재접속 시 이 화면부터)
+// STEP 2 도중 이탈 시 멈춘 페이지부터 이어서 진행하고 상단에 "지난번에 멈춘 곳부터 이어서 해요" 표시 + '처음부터 다시' 링크(누르면 그 구성원 점검 삭제)
+// [별명 표시 규칙] 별명은 모든 화면에서 같은 표시(연녹색 배경 #E3F3EA + 진녹색 굵은 글씨 #00703C, 모서리 6px)로 강조한다
+// 별명은 서버에 저장하지 않고 그 기기의 브라우저에만 보관. 로그인이 없어 이어 하기는 같은 기기·같은 브라우저에서만 된다(참여자 ID 기준)
+componentDidMount() {
+if (!this.state || !this.state.nick) this.setState({ nick: this.makeNick() });
+}
+renderVals() {
+// [결정 2026-11-25 · 다음 버튼 색] 하단 주 버튼('다음', '결과 보기', '꼭 해야 하는 말 정하기', '완료' 등)은 단색 #00B09B + 흰 굵은 글씨(그라데이션 없음). 막힌 상태는 회색(#e6e6e6 배경, #8f8f8f 글자)으로 구분. 진행 막대·선택된 답 칩은 검정 유지
+const labels = ['낮은 등급을 전했어요', '결과에 반발했어요', '다른 구성원과 비교했어요', '고성과자였어요', '울거나 말이 없어졌어요', '자기평가와 차이가 컸어요', '선배나 연차 높은 구성원이에요', '특별한 상황은 없었어요'];
+const on = (this.state && this.state.on) || {};
+const base = 'min-height: 44px; padding: 0 16px; border-radius: 22px; font-family: inherit; font-size: 14px; cursor: pointer; ';
+const nickNow = (this.state && this.state.nick) || '';
+const ready = nickNow.trim().length > 0 && Object.keys(on).some((k) => on[k]);
+return {
+canStart: ready,
+cannotStart: !ready,
+nick: nickNow,
+onNick: (e) => this.setState({ nick: e.target.value }),
+regen: () => this.setState({ nick: this.makeNick() }),
+situations: labels.map((label) => {
+const sel = !!on[label];
+return {
+label: label,
+pressed: sel ? 'true' : 'false',
+style: base + (sel ? 'border: 1px solid #000000; background: #000000; color: #ffffff; font-weight: 700' : 'border: 1px solid #d2d2d2; background: #ffffff; color: #000000'),
+toggle: () => { const NONE = '특별한 상황은 없었어요'; let next = Object.assign({}, on); if (label === NONE) { next = sel ? {} : { [NONE]: true }; } else { next[label] = !sel; delete next[NONE]; } this.setState({ on: next }); }
+};
+})
+};
+}
+}
+</script>
+</body>
+</html>

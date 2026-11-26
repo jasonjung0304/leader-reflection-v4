@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>결과 3: 다음에 해 볼 것</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#000000}a:hover{color:#444444}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: #000000; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Result.dc.html" aria-label="이전 화면" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">STEP 2 · 면담 스타일 점검</span>
+<span style="font-size: 12px; color: #676767">결과 3/3</span>
+</header>
+<div role="progressbar" aria-label="결과 진행" aria-valuemin="0" aria-valuemax="3" aria-valuenow="3" style="height: 4px; background: #e6e6e6; flex-shrink: 0"><div style="width: 100%; height: 4px; background: #000000"></div></div>
+<main style="flex: 1; padding: 28px 20px 24px; display: flex; flex-direction: column; gap: 20px; overflow: auto">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-size: 13px; font-weight: 700; color: #676767">다음에 해 볼 것</p>
+<h1 style="margin: 0; font-size: 26px; line-height: 1.35; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all"><strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과의 다음 면담에서<br>무엇을 해 볼까요?</h1>
+</div>
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<p style="margin: 0; font-size: 18px; line-height: 1.5; font-weight: 700; word-break: keep-all">아쉬운 점이나 바꿔 볼 점을<br>행동과 영향으로 말하기</p>
+<span style="font-size: 12px; color: #676767">교육 도구 · 발전적 피드백 AID</span>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #444444; word-break: keep-all">‘원래 꼼꼼하지 않잖아’처럼 사람을 말하지 말고, 실제 장면과 그 영향을 말해 보세요.</p>
+<div style="padding: 20px; border-radius: 24px; border: 1px solid #d2d2d2; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #676767">다음 면담에서 꼭 해야 하는 말</span>
+<span style="font-size: 16px; line-height: 1.6; word-break: keep-all">“지난 면담에서 제가 충분히 듣지 못한 것 같아 마음에 걸렸어요. 아쉬웠던 부분을 이번엔 끝까지 들어 볼게요.”</span>
+</div>
+</section>
+</main>
+<div style="padding: 12px 20px 20px; border-top: 1px solid #e6e6e6; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0">
+<a href="Action.dc.html" style="height: 48px; border-radius: 24px; background: #00B09B; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">꼭 해야 하는 말 정하기</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 다음 버튼 색] 하단 주 버튼('다음', '결과 보기', '꼭 해야 하는 말 정하기', '완료' 등)은 단색 #00B09B + 흰 굵은 글씨(그라데이션 없음). 막힌 상태 없음(항상 누를 수 있음). 진행 막대·선택된 답 칩은 검정 유지
+// [결과 3 · 다음에 해 볼 것 선택 규칙] '못 했어요' 문항 중 1개
+// 1순위: 결과 1(경향)에서 '낮음'으로 판정된 축의 실행 문항 중 '못 했어요'
+// 2순위: 축 없음 문항 중 '못 했어요'
+// 해당 문항이 없으면 "지금 방식을 이어 가요. 이번 면담에서 점검한 행동을 모두 해냈어요. 다음 면담에서도 같은 방식으로 이어 가요."
+// [꼭 해야 하는 말 규칙] 고른 면담 상황의 문장. 여러 개를 골랐으면 우선순위가 가장 높은 상황 하나
+// 우선순위: 울거나 말이 없어졌어요 > 결과에 반발했어요 > 낮은 등급을 전했어요 > 다른 구성원과 비교했어요 > 자기평가와 차이가 컸어요 > 선배나 연차 높은 구성원이에요 > 고성과자였어요
+// 문장 안 이름 자리는 ○○로 둔다(별명을 넣지 않음). 화면 문장은 예시(결과에 반발했어요)
+// '특별한 상황은 없었어요'를 골랐으면 위에서 고른 '다음에 해 볼 것' 문항에 맞는 첫 마디를 씀
+return {};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>결과 1: 경향과 기억</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#000000}a:hover{color:#444444}
+@keyframes from-black{0%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion: reduce){[data-fade-from-black]{display:none !important}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: #000000; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Checklist5.dc.html" aria-label="이전 화면" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">STEP 2 · 면담 스타일 점검</span>
+<span style="font-size: 12px; color: #676767">결과 1/3</span>
+</header>
+<div role="progressbar" aria-label="결과 진행" aria-valuemin="0" aria-valuemax="3" aria-valuenow="1" style="height: 4px; background: #e6e6e6; flex-shrink: 0"><div style="width: 33%; height: 4px; background: #000000"></div></div>
+<main style="flex: 1; padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; overflow: auto">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-size: 13px; font-weight: 700; color: #676767">경향과 기억 · 결과에 반발했어요</p>
+<h1 style="margin: 0; font-size: 24px; line-height: 1.45; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all"><strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과 <strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #f0f0f0; color: #000000; font-weight: 700">[리더명]</strong>님의 면담은 ‘말하지 않는 리더’에 가까웠어요</h1>
+</div>
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444444; word-break: keep-all">이번 면담에서는 관계를 아끼는 마음이 컸어요. 다만 꼭 필요한 말을 아낀 순간이 있었어요. 다음엔 구체적인 장면 하나만 더해 보세요.</p>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; color: #676767">↑ 개인적 케어</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{ cells }}" as="c" hint-placeholder-count="4">
+<div style="{{ c.style }}"><strong style="display: block">{{ c.label }}</strong><span style="{{ c.subStyle }}">{{ c.sub }}</span></div>
+</sc-for>
+</div>
+<span style="text-align: right; font-size: 12px; color: #676767">직접적 쓴소리 →</span>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 1.5; color: #676767; word-break: keep-all">체크한 행동으로 본 이번 면담의 경향이에요. 리더 성향 진단이 아니에요.</p>
+</section>
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 14px; font-weight: 700; color: #676767">기억한 것과 실제로 한 것</h2>
+<p style="margin: 0; font-size: 12px; color: #676767">교육에서 고른 키워드를 <strong style="display: inline-block; padding: 1px 8px; border-radius: 6px; background: #E3F3EA; color: #00703C; font-weight: 700">[별명]</strong>님과의 면담에서 써 봤는지 비교해요.</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px"><li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 8px; background: #f7f7f7"><span style="font-size: 14px; font-weight: 700">[고른 키워드 1]</span><span style="flex-shrink: 0; padding: 3px 10px; border-radius: 12px; border: 1px solid #d2d2d2; background: #ffffff; font-size: 12px; color: #444444">[이번 면담: 했어요 · 못 했어요]</span></li><li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 8px; background: #f7f7f7"><span style="font-size: 14px; font-weight: 700">[고른 키워드 2]</span><span style="flex-shrink: 0; padding: 3px 10px; border-radius: 12px; border: 1px solid #d2d2d2; background: #ffffff; font-size: 12px; color: #444444">[이번 면담: 했어요 · 못 했어요]</span></li><li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 8px; background: #f7f7f7"><span style="font-size: 14px; font-weight: 700">[고른 키워드 3]</span><span style="flex-shrink: 0; padding: 3px 10px; border-radius: 12px; border: 1px solid #d2d2d2; background: #ffffff; font-size: 12px; color: #444444">[이번 면담: 했어요 · 못 했어요]</span></li></ul>
+</section>
+</main>
+<div style="padding: 12px 20px 20px; border-top: 1px solid #e6e6e6; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0">
+<a href="Result.dc.html" style="height: 48px; border-radius: 24px; background: #00B09B; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">다음</a>
+</div>
+<div data-fade-from-black aria-hidden="true" style="position: absolute; inset: 0; background: #000000; pointer-events: none; z-index: 3; animation: from-black .7s ease-out .1s both"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 다음 버튼 색] 하단 주 버튼('다음', '결과 보기', '꼭 해야 하는 말 정하기', '완료' 등)은 단색 #00B09B + 흰 굵은 글씨(그라데이션 없음). 막힌 상태 없음(항상 누를 수 있음). 진행 막대·선택된 답 칩은 검정 유지
+// [결정 2026-11-25 · 헤드 메시지] "[별명]님과 [리더명]님의 면담은 ‘[유형명]’에 가까웠어요" (유형명은 작은따옴표 ‘ ’로 감싸서 표시). 유형명은 판정된 4분면의 label(content.json → quadrants). 별명은 연녹색 토큰, 리더명은 회색 토큰. 이름이 길면 줄바꿈 허용(word-break: keep-all). 아래 따로 있던 '[유형명]에 가까웠어요' 줄은 헤드 메시지와 겹쳐 삭제
+// [결정 2026-11-25 · 페이드인] 결과 정리(검정 화면)에서 넘어오면 검정 가림막이 0.7초 동안 투명해지며 결과 1이 드러난다(0.1초 대기 후 시작). 동작 줄이기 설정이면 페이드 없이 바로 표시. 뒤로 가기로 돌아올 때는 페이드 없음
+// [결정 2026-11-25] 결과 1에는 이모지 애니메이션을 넣지 않는다(박수 제거). 검정 → 흰 화면 페이드인만 둔다
+// [결정 2026-11-25] '판단 근거 보기'(축별 실행 수·부족 신호 수 접기)는 화면과 PDF에서 모두 뺀다. 판정 규칙은 아래와 같이 서버·화면 로직에만 남는다
+// 판정 규칙 (축마다 실행 4문항 + 부족 신호 2문항)
+// 케어 실행: 구성원이 먼저 설명 · 끝까지 들음 · 잘한 행동을 장면으로 · 의견에 답함
+// 쓴소리 실행: 아쉬운 점이나 바꿔 볼 점 · 바라는 행동 · 기대 수준 · 목표 대비 근거
+// 높음 = 실행률(했어요 ÷ (했어요+못 했어요)) 절반 이상 AND 부족 신호 '있었어요' 1개 이하
+// 낮음 = 실행률 절반 미만 OR 부족 신호 2개 모두 '있었어요' (신호 하나만으로는 칸이 바뀌지 않음)
+// 해당 없음이 없어 모든 문항이 실행률 계산에 들어간다(판정 보류 없음). near 는 시안용 값
+// [기억한 것과 실제로 한 것 · 키워드-문항 연결]
+// 끝까지 경청 → 끝까지 들었다 / 확대 질문 → 예·아니오로 끝나지 않는 질문 / 미래 질문 → '앞으로 어떻게'를 물었다
+// 지지적 피드백 AIT → 잘한 행동을 장면으로 짚었다 / 발전적 피드백 AID → 아쉬운 점이나 바꿔 볼 점 + 바라는 행동(둘 다 했어요면 '했어요')
+// 피드포워드 → 바라는 행동을 분명히 말했다 / 평가 오류 점검 → 1년 기록을 근거로 삼았다
+// 면담 오프닝 → 1페이지 3문항 중 2개 이상 '했어요'면 '했어요' / 공정성 3요소 → 4페이지 3문항 중 2개 이상 '했어요'면 '했어요'
+// '잘 떠오르지 않아요'를 골랐으면 이 영역에 "기억에 남은 키워드가 없었어요"만 표시
+// 칸별 설명 4종은 개발 명세서 문구표를 따른다(화면 문장은 '말하지 않는 리더' 예시)
+const near = 're';
+const cells = [
+{ key: 're', label: '말하지 않는 리더', sub: '파괴적 공감' },
+{ key: 'rc', label: '권위 있는 리더', sub: '완전한 솔직함' },
+{ key: 'mi', label: '방임형 리더', sub: '관리의 방치' },
+{ key: 'oa', label: '권위주의적 리더', sub: '불쾌한 공격성' }
+];
+return {
+cells: cells.map((c) => {
+const on = c.key === near;
+return {
+label: c.label, sub: c.sub,
+style: 'padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; box-sizing: border-box; ' + (on ? 'background: #000000; color: #ffffff; border: 1px solid #000000' : 'background: #f7f7f7; color: #000000; border: 1px solid #f7f7f7'),
+subStyle: on ? 'color: #d2d2d2' : 'color: #676767'
+};
+})
+};
+}
+}
+</script>
+</body>
+</html>

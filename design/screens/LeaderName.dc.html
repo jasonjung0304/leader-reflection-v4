@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>리더명 정하기</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#000000}a:hover{color:#444444}
+@keyframes arrow-slide{0%{transform:translateX(-12px);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateX(20px);opacity:0}}
+@media (prefers-reduced-motion: reduce){.arrow-move{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: #000000; font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<header style="height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+<a href="Notice.dc.html" aria-label="안내로 돌아가기" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 700">Great Candor Review</span>
+<span style="width: 44px"></span>
+</header>
+<main style="flex: 1; padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 20px; overflow: hidden">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h1 style="margin: 0; font-size: 28px; line-height: 1.3; font-weight: 700; letter-spacing: -0.025em; word-break: keep-all">어떤 리더로<br>불러 드릴까요?</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #444444; word-break: keep-all">오늘 리플렉션에서 쓸 이름이에요.<br>마음에 드는 것을 고르거나 직접 적어 주세요.</p>
+</div>
+<div role="radiogroup" aria-label="리더명" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+<button type="button" role="radio" aria-checked="{{ o.checked }}" onClick="{{ o.pick }}" style="{{ o.style }}"><span style="{{ o.nameStyle }}">{{ o.label }}</span><span aria-hidden="true" style="{{ o.dot }}"></span></button>
+</sc-for>
+<button type="button" role="radio" aria-checked="{{ customChecked }}" onClick="{{ pickCustom }}" style="{{ customStyle }}"><span style="font-size: 16px">직접 적을게요</span><span aria-hidden="true" style="{{ customDot }}"></span></button>
+<sc-if value="{{ showInput }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px">
+<label for="lname" style="font-size: 14px; font-weight: 700">리더명</label>
+<input id="lname" type="text" maxlength="15" value="{{ custom }}" onChange="{{ onCustom }}" placeholder="예: 묻고 듣는 리더" style="height: 48px; box-sizing: border-box; border-radius: 8px; border: 1px solid #d2d2d2; padding: 0 14px; font-family: inherit; font-size: 16px; font-weight: 700; color: #000000">
+<p style="margin: 0; font-size: 12px; line-height: 1.5; color: #676767; word-break: keep-all">2~15자. 실명, 사번, 직급은 적지 말아 주세요.</p>
+</div>
+</sc-if>
+</div>
+<div style="margin-top: auto; min-height: 22px; display: flex; justify-content: center">
+<sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 14px; color: #444444; text-align: center; word-break: keep-all">앞으로 <span style="padding: 1px 8px; border-radius: 6px; background: #f0f0f0; color: #000000; font-weight: 700">{{ chosen }}</span>님으로 불러 드려요</p>
+</sc-if>
+<sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 14px; color: #676767; text-align: center">리더명을 고르면 다음으로 넘어갈 수 있어요</p>
+</sc-if>
+</div>
+</main>
+<div style="flex-shrink: 0; padding: 0 20px 16px; display: flex; flex-direction: column; align-items: center">
+<sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+<a href="Intro.dc.html" aria-label="이 이름으로 시작하기" style="width: 120px; height: 64px; display: flex; align-items: center; justify-content: center; color: #000000"><span class="arrow-move" style="display: inline-flex; animation: arrow-slide 1.6s ease-in-out infinite"><svg width="64" height="32" viewBox="0 0 64 32" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16H58"></path><path d="M46 6L59 16L46 26"></path></svg></span></a>
+</sc-if>
+<sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}">
+<span role="link" aria-disabled="true" aria-label="리더명을 고르면 시작할 수 있어요" style="width: 120px; height: 64px; display: flex; align-items: center; justify-content: center; opacity: 0.2"><svg width="64" height="32" viewBox="0 0 64 32" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16H58"></path><path d="M46 6L59 16L46 26"></path></svg></span>
+</sc-if>
+<span aria-hidden="true" style="height: 44px"></span>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+// [결정 2026-11-25 · 개발 방향 변경] Vercel 배포, 개인정보 미수집. 로그인 없음. 리더는 이 화면에서 정한 리더명으로만 기록된다
+// [개발 명세 · 리더명] 보기 4개 = 4분면 유형을 형용사 2개로 표현(개인적 케어, 직접적 쓴소리 순). 화면에는 유형 이름을 드러내지 않는다
+//   rc 권위 있는 리더(케어 높음, 쓴소리 높음) → '따뜻하고 솔직한 리더'
+//   re 말하지 않는 리더(케어 높음, 쓴소리 낮음) → '다정하고 배려 깊은 리더'
+//   oa 권위주의적 리더(케어 낮음, 쓴소리 높음) → '단호하고 명확한 리더'
+//   mi 방임형 리더(케어 낮음, 쓴소리 낮음) → '차분하고 신중한 리더'
+//   직접 적을게요 → leader_type = 'custom'. 2~15자, 앞뒤 공백 제거. 이메일·전화번호·숫자 6자리 이상(사번 패턴)은 저장 전에 막고 안내
+// 실제 앱은 처음에 아무것도 고르지 않은 상태로 연다(캔버스는 선택된 모습을 보여 주려고 첫 보기를 미리 고른 상태). 아무것도 고르지 않았거나 직접 쓰기가 2자 미만이면 화살표는 흐리게(투명도 0.2) 멈춰 있고 눌리지 않는다. 고르면 안내·퀵 리뷰 화면과 같은 화살표 애니메이션이 돌며 퀵 리뷰 시작으로 이동
+// 보기 4개의 순서는 리더마다 무작위로 섞는다(순서 효과 방지). 문구는 content.json → leader_name
+// 저장: participant { id(무작위 UUID, 브라우저 저장소에 보관), leader_name, leader_type, display_no(같은 리더명끼리 구분하는 4자리 번호, 관리자 화면에만 표시), created_at }
+// 같은 기기·브라우저로 다시 들어오면 이 화면을 건너뛰고 멈춘 곳부터 이어 한다. 리더명은 STEP 1 완료 전까지만 바꿀 수 있다
+// 다른 기기나 브라우저로 들어오면 새 참여자로 시작한다(로그인이 없어 연결할 방법이 없음). 안내 문구에서 '처음 연 기기로 이어 해 주세요'를 알린다
+// [개발 명세 · 화살표 위치(안내·리더명·퀵 리뷰 공통)] 화살표(120×64)는 화면 하단 고정 영역에 둔다: 하단 여백 16px + 아래 칸 44px(안내는 '나중에 할게요', 나머지는 빈 칸) 위. 세 화면에서 같은 높이에 보이게 한다. 본문이 길면 가운데 영역만 스크롤
+// [결정 2026-11-25] 직접 쓴 리더명이 '리더'로 끝나지 않으면 ' 리더'를 붙인 형태로 저장한다(화면에서 부르는 형태 = 저장 형태 = 관리자 표시 형태). 미리보기 문장도 붙인 형태로 보여 준다
+// 리더명 표시 규칙: 회색 배경 #f0f0f0 + 검정 굵은 글씨, 모서리 6px. 구성원 별명(연녹색)과 구분한다
+const st = this.state || {};
+const opts = [
+{ key: 'rc', label: '따뜻하고 솔직한 리더' },
+{ key: 're', label: '다정하고 배려 깊은 리더' },
+{ key: 'oa', label: '단호하고 명확한 리더' },
+{ key: 'mi', label: '차분하고 신중한 리더' }
+];
+const sel = st.sel === undefined ? 'rc' : st.sel;
+const custom = st.custom || '';
+const row = 'min-height: 56px; padding: 0 16px; border-radius: 12px; font-family: inherit; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; background: #ffffff; color: #000000; ';
+const on = 'border: 1.5px solid #000000';
+const off = 'border: 1px solid #d2d2d2';
+const dot = (c) => 'width: 20px; height: 20px; border-radius: 10px; box-sizing: border-box; flex-shrink: 0; ' + (c ? 'border: 6px solid #000000' : 'border: 1.5px solid #b4b4b4');
+const isCustom = sel === 'custom';
+const customOk = custom.trim().length >= 2;
+const picked = opts.find((o) => o.key === sel);
+const chosen = isCustom ? custom.trim() : (picked ? picked.label : '');
+const ready = isCustom ? customOk : !!picked;
+return {
+options: opts.map((o) => {
+const c = sel === o.key;
+return {
+label: o.label,
+checked: c ? 'true' : 'false',
+pick: () => this.setState({ sel: o.key }),
+style: row + (c ? on : off),
+nameStyle: 'font-size: 16px; ' + (c ? 'font-weight: 700' : ''),
+dot: dot(c)
+};
+}),
+customChecked: isCustom ? 'true' : 'false',
+pickCustom: () => this.setState({ sel: 'custom' }),
+customStyle: row + (isCustom ? on : off),
+customDot: dot(isCustom),
+showInput: isCustom,
+custom: custom,
+onCustom: (e) => this.setState({ custom: e.target.value }),
+chosen: chosen,
+ready: ready,
+notReady: !ready
+};
+}
+}
+</script>
+</body>
+</html>
