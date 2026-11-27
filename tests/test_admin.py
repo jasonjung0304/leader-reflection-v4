@@ -468,6 +468,83 @@ def test_settings_entry_key_change(web):
     assert web.put("/api/admin/settings", headers=AH, json={"clear": ["entry_key"]}).status_code == 422
 
 
+def test_secret_admin_link(web):
+    """2026-11-27: 관리자 링크를 만들면 그 키(X-Admin-Link)가 없는 브라우저에는 로그인 화면·로그인이 404.
+    새 링크로 바꾸면 바꾼 사람은 로그인 유지, 예전 로그인 쿠키는 무효. 끄면 다시 /admin 만으로."""
+    assert web.get("/api/admin/login-text").status_code == 200          # 링크를 만들기 전에는 확인 안 함
+    login(web)
+    old_cookie = web.cookies.get(admin_auth.COOKIE)
+    r = web.post("/api/admin/link", headers=AH, json={"action": "rotate"})
+    assert r.status_code == 200 and r.json()["admin_link_source"] == "settings"
+    key = r.json()["admin_link_key"]
+    assert len(key) >= 24
+    assert web.get("/api/admin/me").status_code == 200                  # 바꾼 사람은 그대로
+    assert web.get("/api/admin/login-text").json()["error"] == "not_found"
+    assert web.get("/api/admin/login-text", headers={"X-Admin-Link": "wrong"}).status_code == 404
+    assert web.get("/api/admin/login-text", headers={"X-Admin-Link": key}).status_code == 200
+    assert web.post("/api/admin/login", headers=AH, json={"password": "dev-full"}).status_code == 404
+    assert web.post("/api/admin/login", headers={**AH, "X-Admin-Link": key}, json={"password": "dev-full"}).status_code == 200
+    other = TestClient(main.app, base_url="https://testserver")
+    other.cookies.set(admin_auth.COOKIE, old_cookie)
+    assert other.get("/api/admin/me").status_code == 401                # 링크를 바꾸기 전의 로그인은 풀림
+    r = web.post("/api/admin/link", headers=AH, json={"action": "off"})
+    assert r.json()["admin_link_key"] is None and r.json()["admin_link_source"] == "none"
+    assert web.get("/api/admin/login-text").status_code == 200
+
+
+def test_admin_link_from_env(web, monkeypatch):
+    monkeypatch.setenv("ADMIN_LINK_KEY", "env-admin-link-key")
+    assert web.get("/api/admin/login-text").status_code == 404
+    assert web.get("/api/admin/login-text", headers={"X-Admin-Link": "env-admin-link-key"}).status_code == 200
+
+
+def test_change_admin_password(web):
+    """2026-11-27: 관리자 화면에서 암호 바꾸기 — 지금 전체 권한 암호 확인, 10자 이상, 두 권한 서로 다르게, 해시로만 저장."""
+    login(web)
+    reader = TestClient(main.app, base_url="https://testserver")
+    login(reader, "dev-read")
+    bad = lambda body: web.post("/api/admin/password", headers=AH, json=body)  # noqa: E731
+    assert bad({"current": "nope", "role": "readonly", "new": "Readonly-2026!"}).status_code == 401
+    assert bad({"current": "dev-full", "role": "readonly", "new": "short"}).json()["error"] == "password_too_short"
+    assert bad({"current": "dev-full", "role": "readonly", "new": " padded-pass "}).json()["error"] == "password_too_short"
+    r = web.post("/api/admin/password", headers=AH, json={"current": "dev-full", "role": "readonly", "new": "Readonly-2026!"})
+    assert r.status_code == 200 and r.json()["admin_password_source"] == {"full": "env", "readonly": "settings"}
+    assert reader.get("/api/admin/me").status_code == 401               # 읽기 전용으로 로그인해 있던 사람은 다시 로그인
+    assert web.get("/api/admin/me").status_code == 200
+    assert web.post("/api/admin/password", headers=AH, json={"current": "dev-full", "role": "full", "new": "Readonly-2026!"}).json()["error"] == "password_same_as_other"
+    r = web.post("/api/admin/password", headers=AH, json={"current": "dev-full", "role": "full", "new": "Culture-Team-2026"})
+    assert r.status_code == 200 and web.get("/api/admin/me").status_code == 200   # 바꾼 사람은 로그인 유지
+    fresh = TestClient(main.app, base_url="https://testserver")
+    assert fresh.post("/api/admin/login", headers=AH, json={"password": "dev-full"}).status_code == 401   # 예전 암호는 안 됨
+    assert fresh.post("/api/admin/login", headers=AH, json={"password": "Culture-Team-2026"}).json()["role"] == "full"
+    assert reader.post("/api/admin/login", headers=AH, json={"password": "Readonly-2026!"}).json()["role"] == "readonly"
+    assert reader.post("/api/admin/password", headers=AH, json={"current": "x", "role": "full", "new": "y" * 12}).status_code == 403
+    assert reader.post("/api/admin/link", headers=AH, json={"action": "rotate"}).status_code == 403
+    view = web.get("/api/admin/settings").json()
+    assert "admin_password_hashes" not in view
+    with db.get_session() as s:
+        stored = json.dumps(db.get_settings(s)["admin_password_hashes"])
+    assert "Culture-Team-2026" not in stored and "Readonly-2026!" not in stored and stored.count("pbkdf2_sha256$") == 2
+
+
+def test_settings_open_entry(web, monkeypatch):
+    """2026-11-27: 관리자 설정 '입장 키 없이 들어오기' — 켜기·끄기·비우기(환경 변수 따름). 읽기 전용은 바꿀 수 없다."""
+    login(web)
+    s = web.get("/api/admin/settings").json()
+    assert s["open_entry"] is False and s["open_entry_source"] == "default"
+    r = web.put("/api/admin/settings", headers=AH, json={"open_entry": True})
+    assert r.status_code == 200 and r.json()["open_entry"] is True and r.json()["open_entry_source"] == "settings"
+    assert web.get("/api/content").status_code == 200                       # 키 없이
+    r = web.put("/api/admin/settings", headers=AH, json={"open_entry": False})
+    assert r.json()["open_entry"] is False and web.get("/api/content").status_code == 403
+    monkeypatch.setenv("OPEN_ENTRY", "1")
+    r = web.put("/api/admin/settings", headers=AH, json={"clear": ["open_entry"]})
+    assert r.json()["open_entry"] is True and r.json()["open_entry_source"] == "env"
+    web.post("/api/admin/logout", headers=AH)
+    login(web, "dev-read")
+    assert web.put("/api/admin/settings", headers=AH, json={"open_entry": False}).status_code == 403
+
+
 def test_delete_participant_by_name_and_serial(web, dataset):
     with db.get_session() as s:
         p = s.get(db.Participant, dataset["a"])

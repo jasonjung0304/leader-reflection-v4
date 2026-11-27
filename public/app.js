@@ -1202,7 +1202,9 @@
   async function recommend() {
     const D = C.done;
     Events.track('done_button_click', { button: 'recommend' });
-    const url = `${location.origin}/?k=${encodeURIComponent(S.entryKey || '')}&ref=recommend`;
+    // 입장 키 없이 들어오게 열어 두었으면 기본 주소만(2026-11-27). 아니면 이 브라우저의 입장 키를 붙인다
+    const key = !S.settings.open_entry && S.entryKey ? `k=${encodeURIComponent(S.entryKey)}&` : '';
+    const url = `${location.origin}/?${key}ref=recommend`;
     if (await copyText(url)) { toast(D.recommend_copied, 2500); Events.track('recommend_copied'); }
     else window.prompt(D.copy_error, url);   // 복사가 막힌 브라우저: 링크를 보여 주고 직접 복사
   }

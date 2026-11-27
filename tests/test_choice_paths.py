@@ -142,7 +142,7 @@ def test_csv_cells_starting_with_formula_chars_are_escaped(client):
     r = client.patch("/api/checks/1", headers=hdr(pid=p), json={
         "answers": answers(), "action_type": "custom", "action_text": '=HYPERLINK("http://x.y","보기")', "complete": True})
     assert r.status_code == 200
-    client.cookies.set(admin_auth.COOKIE, admin_auth.make_cookie("full"))
+    client.cookies.set(admin_auth.COOKIE, admin_auth.make_cookie("full", {}))
     leaders = client.get("/api/admin/export/leaders.csv").text
     texts = client.get("/api/admin/export/texts.csv").text
     assert "'=1+2 리더" in leaders

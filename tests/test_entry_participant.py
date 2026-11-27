@@ -64,6 +64,37 @@ def test_user_apis_need_key(client, method, path):
     assert r.status_code == 403 and r.json()["error"] == "entry_denied"
 
 
+# ---------------- 입장 키 없이 들어오기 (2026-11-27) ----------------
+def test_open_entry_by_admin_setting(client):
+    """켜 두면 키 없이·예전 키로도 들어오고 참여할 수 있다. 문구에 open_entry 가 실려 추천 링크가 키를 빼게 한다."""
+    assert client.get("/api/content").status_code == 403
+    with db.get_session() as s:
+        db.save_settings(s, {"open_entry": True})
+    r = client.get("/api/content")
+    assert r.status_code == 200 and r.json()["settings"]["open_entry"] is True
+    assert client.get("/api/content", headers=hdr(key="old-key")).status_code == 200
+    pid = create(client, key=None).json()["participant_id"]
+    assert client.get("/api/me", headers=hdr(pid=pid, key=None)).status_code == 200
+
+
+def test_open_entry_env_and_override(client, monkeypatch):
+    """환경 변수 OPEN_ENTRY 로 켜고, 관리자 설정(False)이 환경 변수보다 우선. 마감은 열어 둬도 막는다."""
+    monkeypatch.setenv("OPEN_ENTRY", "true")
+    assert db.open_entry({"open_entry": None}) == (True, "env")
+    assert client.get("/api/content").status_code == 200
+    with db.get_session() as s:
+        db.save_settings(s, {"open_entry": False})
+    assert client.get("/api/content").status_code == 403
+    assert client.get("/api/content", headers=hdr()).json()["settings"]["open_entry"] is False
+    monkeypatch.setenv("OPEN_ENTRY", "no")
+    assert db.open_entry({"open_entry": None}) == (False, "env")
+    monkeypatch.delenv("OPEN_ENTRY")
+    assert db.open_entry({"open_entry": None}) == (False, "default")
+    with db.get_session() as s:
+        db.save_settings(s, {"open_entry": True, "deadline": "2000-01-01"})
+    assert client.get("/api/content").json()["closed"] is True
+
+
 # ---------------- 마감 ----------------
 def test_closed(client):
     pid = create(client).json()["participant_id"]

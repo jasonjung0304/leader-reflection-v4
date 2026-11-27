@@ -13,6 +13,21 @@
   let tab = 'dashboard';
   let renderToken = 0;
 
+  // 비밀 관리자 링크(2026-11-27): /admin?a=키 로 열면 이 브라우저에 키를 두고 주소창에서는 지운다.
+  // 로그인 문구·로그인 요청에 X-Admin-Link 로 함께 보낸다(키를 정해 두지 않았으면 서버가 확인하지 않음)
+  const LINK_STORE = 'lr4.admin_link';
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 무시 */ } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) { /* 무시 */ } },
+  };
+  (() => {
+    const u = new URL(location.href);
+    const a = u.searchParams.get('a');
+    if (a) { store.set(LINK_STORE, a); u.searchParams.delete('a'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
+  })();
+  const linkHeader = () => { const k = store.get(LINK_STORE); return k ? { 'X-Admin-Link': k } : {}; };
+
   // ----------------------------------------------------------------------- //
   // 도우미
   // ----------------------------------------------------------------------- //
@@ -41,7 +56,7 @@
   function toast(text) { $toast.textContent = text; $toast.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { $toast.hidden = true; }, 2500); }
 
   async function api(method, path, body) {
-    const headers = { Accept: 'application/json' };
+    const headers = Object.assign({ Accept: 'application/json' }, linkHeader());
     if (method !== 'GET') headers['X-Admin-Request'] = '1';
     if (body !== undefined) headers['Content-Type'] = 'application/json';
     try {
@@ -186,8 +201,15 @@
   // ----------------------------------------------------------------------- //
   // 틀
   // ----------------------------------------------------------------------- //
+  /** 비밀 관리자 링크로 열지 않은 경우: 로그인 화면 대신 '없는 페이지'. 문구를 받을 수 없는 상태라 예외적으로 코드에 둔다 */
+  function notFound() {
+    document.title = '404';
+    $root.replaceChildren(h('div', { class: 'login' }, h('div', null, h('h1', null, '404'), h('p', { class: 'muted' }, '페이지를 찾을 수 없어요.'))));
+  }
   async function showLogin() {
-    const r = await fetch('/api/admin/login-text', { cache: 'no-store' }).then((x) => x.json()).catch(() => null);
+    const res = await fetch('/api/admin/login-text', { cache: 'no-store', headers: linkHeader() }).catch(() => null);
+    if (res && res.status === 404) { store.del(LINK_STORE); notFound(); return; }
+    const r = res ? await res.json().catch(() => null) : null;
     const T = (r && r.login) || {};
     const input = h('input', { type: 'password', id: 'pw', autocomplete: 'current-password', required: true });
     const err = h('p', { class: 'err', role: 'alert' });
@@ -609,7 +631,18 @@
     });
     // 입장 키
     const E = T.entry;
-    const link = s.entry_key ? `${location.origin}/?k=${encodeURIComponent(s.entry_key)}` : null;
+    // 입장 키 없이 들어오기를 켜 두면 안내 링크는 기본 주소(2026-11-27)
+    const link = s.open_entry ? `${location.origin}/` : (s.entry_key ? `${location.origin}/?k=${encodeURIComponent(s.entry_key)}` : null);
+    const openBox = h('input', { type: 'checkbox', id: 's-open', checked: !!s.open_entry, style: 'width:18px;height:18px;padding:0;margin:0;flex:none' });
+    const openErr = h('p', { class: 'err' });
+    const saveOpen = h('button', { type: 'button', class: 'btn sm' }, T.save);
+    saveOpen.addEventListener('click', async () => {
+      if (openBox.checked === !!s.open_entry) return;
+      if (!window.confirm(openBox.checked ? E.open_confirm_on : E.open_confirm_off)) { openBox.checked = !!s.open_entry; return; }
+      const r = await api('PUT', '/api/admin/settings', { open_entry: openBox.checked });
+      if (!r.ok) { openErr.textContent = T.errors[r.data.error] || T.errors.generic; return; }
+      toast(T.saved); render();
+    });
     const newKey = h('input', { type: 'text', id: 's-key', maxlength: 64, autocomplete: 'off', style: 'width:320px' });
     const keyErr = h('p', { class: 'err' });
     const genKey = () => { const b = crypto.getRandomValues(new Uint8Array(12)); newKey.value = btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
@@ -620,6 +653,54 @@
       if (!r.ok) { keyErr.textContent = T.errors[r.data.error] || T.errors.generic; return; }
       toast(T.saved); render();
     });
+    // 비밀 관리자 링크(2026-11-27)
+    const LK = T.admin_link;
+    const adminLink = s.admin_link_key ? `${location.origin}/admin?a=${encodeURIComponent(s.admin_link_key)}` : null;
+    const linkMsg = h('p', { class: 'note' });
+    const linkAction = async (action) => {
+      if (!window.confirm(action === 'rotate' ? LK.confirm_rotate : LK.confirm_off)) return;
+      const r = await api('POST', '/api/admin/link', { action });
+      if (!r.ok) { linkMsg.textContent = T.errors.generic; return; }
+      if (r.data.admin_link_key) store.set(LINK_STORE, r.data.admin_link_key); else store.del(LINK_STORE);
+      toast(T.saved); render();
+    };
+    const linkCard = h('section', { class: 'card' }, h('div', { class: 'card-h' }, h('h3', null, LK.title)), h('p', { class: 'note' }, LK.help),
+      h('div', { class: 'form' },
+        h('span', { class: 'lab' }, LK.current), h('div', { class: 'field' }, adminLink ? h('span', { class: 'code' }, adminLink) : h('span', null, LK.none),
+          h('span', { class: 'note' }, LK.source[s.admin_link_source])),
+        h('span', { class: 'lab' }, ''), h('div', { class: 'field' }, h('div', { style: 'display:flex;gap:8px;align-items:center' },
+          h('button', { type: 'button', class: 'btn sm', onclick: () => linkAction('rotate') }, adminLink ? LK.rotate : LK.create),
+          s.admin_link_source === 'settings' ? h('button', { type: 'button', class: 'btn sm', onclick: () => linkAction('off') }, LK.off) : null), linkMsg)));
+    // 관리자 암호 바꾸기(2026-11-27): 지금 전체 권한 암호를 한 번 더 확인. 새 암호는 서버에 해시로만 저장
+    const PW = T.admin_password;
+    const pwInput = (id, label, auto) => {
+      const i = h('input', { type: 'password', id, autocomplete: auto, maxlength: 200, style: 'width:280px' });
+      return { i, row: [h('label', { class: 'lab', for: id }, label), h('div', { class: 'field' }, i)] };
+    };
+    const pwCurrent = pwInput('pw-current', PW.current, 'current-password');
+    const pwRole = h('select', { id: 'pw-role', class: 'btn', style: 'width:280px' },
+      h('option', { value: 'full' }, PW.roles.full), h('option', { value: 'readonly' }, PW.roles.readonly));
+    const pwNew = pwInput('pw-new', PW.new, 'new-password');
+    const pwNew2 = pwInput('pw-new2', PW.new2, 'new-password');
+    const pwMsg = h('p', { class: 'err', role: 'alert' });
+    const pwSave = h('button', { type: 'button', class: 'btn sm', style: 'align-self:flex-start' }, PW.submit);
+    pwSave.addEventListener('click', async () => {
+      pwMsg.textContent = '';
+      if (pwNew.i.value !== pwNew2.i.value) { pwMsg.textContent = PW.errors.mismatch; return; }
+      if (!window.confirm(fmt(PW.confirm, { role: PW.roles[pwRole.value] }))) return;
+      const r = await api('POST', '/api/admin/password', { current: pwCurrent.i.value, role: pwRole.value, new: pwNew.i.value });
+      if (!r.ok) {
+        pwMsg.textContent = r.status === 423 ? PW.errors.locked : (PW.errors[r.data.error] || T.errors.generic);
+        return;
+      }
+      [pwCurrent.i, pwNew.i, pwNew2.i].forEach((x) => { x.value = ''; });
+      toast(fmt(PW.done, { role: PW.roles[r.data.role] })); render();
+    });
+    const srcText = (role) => `${PW.roles[role]}: ${PW.source[(s.admin_password_source || {})[role] || 'env']}`;
+    const pwCard = h('section', { class: 'card' }, h('div', { class: 'card-h' }, h('h3', null, PW.title), h('span', { class: 'small muted' }, `${srcText('full')} · ${srcText('readonly')}`)),
+      h('p', { class: 'note' }, PW.help),
+      h('div', { class: 'form' }, pwCurrent.row, h('label', { class: 'lab', for: 'pw-role' }, PW.role), h('div', { class: 'field' }, pwRole), pwNew.row, pwNew2.row,
+        h('span', { class: 'lab' }, ''), h('div', { class: 'field' }, pwSave, pwMsg)));
     // 참여자 삭제
     const P = T.delete_participant;
     const pName = h('input', { type: 'text', id: 'd-name', maxlength: 60, style: 'width:240px' });
@@ -659,9 +740,13 @@
         pvTable, h('p', { class: 'note' }, fmt(TP.note, { pct: pv.skew_pct }))),
       h('section', { class: 'card' }, h('div', { class: 'card-h' }, h('h3', null, E.title)),
         h('div', { class: 'form' },
+          h('label', { class: 'lab', for: 's-open' }, E.open_label), h('div', { class: 'field' },
+            h('div', { style: 'display:flex;gap:8px;align-items:center' }, openBox, h('span', null, s.open_entry ? E.open_on : E.open_off), saveOpen),
+            h('span', { class: 'note' }, `${E.open_help} (${E.open_source[s.open_entry_source]})`), openErr),
           h('span', { class: 'lab' }, E.current), h('div', { class: 'field' }, s.entry_key ? h('span', { class: 'code' }, s.entry_key) : null, h('span', { class: 'note' }, E.source[s.entry_key_source])),
           h('span', { class: 'lab' }, E.link), h('div', { class: 'field' }, link ? h('span', { class: 'code' }, link) : D()),
           h('label', { class: 'lab', for: 's-key' }, E.new), h('div', { class: 'field' }, h('div', { style: 'display:flex;gap:8px;align-items:center' }, newKey, h('button', { type: 'button', class: 'btn sm', onclick: genKey }, E.generate), saveKey), h('span', { class: 'note' }, E.help), keyErr))),
+      linkCard, pwCard,
       h('section', { class: 'card' }, h('div', { class: 'card-h' }, h('h3', null, P.title)), h('p', { class: 'note' }, P.help),
         h('div', { style: 'display:flex;gap:8px;align-items:center' }, h('label', { for: 'd-name' }, P.name), pName, h('label', { for: 'd-serial' }, P.serial), pSerial, pBtn), pMsg),
       h('section', { class: 'card' }, h('div', { class: 'card-h' }, h('h3', null, DD.title)), h('p', { class: 'note' }, fmt(DD.help, { cycle_id: s.cycle_id })),

@@ -18,7 +18,7 @@ import random
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import StreamingResponse
@@ -67,12 +67,24 @@ class Admin:
 
 
 def require_admin(request: Request, session: Session = Depends(get_db)) -> Admin:
-    role = admin_auth.read_cookie(request.cookies.get(admin_auth.COOKIE))
+    settings = db.get_settings(session)
+    role = admin_auth.read_cookie(request.cookies.get(admin_auth.COOKIE), settings)
     if role is None:
         raise error(401, "admin_login_required")
     if request.method not in ("GET", "HEAD") and request.headers.get("x-admin-request") != "1":
         raise error(403, "admin_bad_request")
-    return Admin(role, session, db.get_settings(session))
+    return Admin(role, session, settings)
+
+
+def require_link(request: Request, settings: dict) -> None:
+    """비밀 관리자 링크(2026-11-27): 링크 키를 정해 두었으면 그 키가 없는 브라우저에는 로그인 화면도 없는 것처럼(404)."""
+    if not admin_auth.link_ok(request.headers.get("x-admin-link"), settings):
+        raise error(404, "not_found")
+
+
+def set_login_cookie(response: Response, role: str, settings: dict) -> None:
+    response.set_cookie(admin_auth.COOKIE, admin_auth.make_cookie(role, settings), max_age=admin_auth.MAX_AGE,
+                        httponly=True, secure=True, samesite="strict", path="/")
 
 
 def require_full(a: Admin = Depends(require_admin)) -> Admin:
@@ -93,9 +105,10 @@ class LoginIn(BaseModel):
 
 
 @router.get("/login-text")
-def login_text(response: Response) -> dict:
-    """로그인 전에 필요한 문구만(데이터 없음)."""
+def login_text(request: Request, response: Response, session: Session = Depends(get_db)) -> dict:
+    """로그인 전에 필요한 문구만(데이터 없음). 비밀 링크로 열지 않았으면 404."""
     response.headers["Cache-Control"] = "no-store"
+    require_link(request, db.get_settings(session))
     return {"app": {k: admin_content()["app"][k] for k in ("title", "badge")}, "login": admin_content()["login"]}
 
 
@@ -103,20 +116,21 @@ def login_text(response: Response) -> dict:
 def login(body: LoginIn, request: Request, response: Response, session: Session = Depends(get_db)) -> dict:
     if request.headers.get("x-admin-request") != "1":
         raise error(403, "admin_bad_request")
-    if not admin_auth.configured():
+    settings = db.get_settings(session)
+    require_link(request, settings)
+    if not admin_auth.configured(settings):
         raise error(503, "admin_not_configured")
     until = admin_auth.locked_until(session)
     if until:
         raise error(423, "admin_locked", until.isoformat())
-    role = admin_auth.role_for_password(body.password)
+    role = admin_auth.role_for_password(body.password, settings)
     if role is None:
         until = admin_auth.record_failure(session)
         if until:
             raise error(423, "admin_locked", until.isoformat())
         raise error(401, "admin_wrong_password")
     admin_auth.record_success(session)
-    response.set_cookie(admin_auth.COOKIE, admin_auth.make_cookie(role), max_age=admin_auth.MAX_AGE,
-                        httponly=True, secure=True, samesite="strict", path="/")
+    set_login_cookie(response, role, settings)
     no_store(response)
     return {"role": role}
 
@@ -234,7 +248,8 @@ class SettingsIn(BaseModel):
     dwell_cutoff_sec: Optional[int] = Field(default=None, ge=30, le=3600)
     high_threshold: Optional[float] = Field(default=None, ge=0.25, le=1.0)
     duration_min: Optional[int] = Field(default=None, ge=1, le=120)
-    clear: list[str] = Field(default_factory=list)   # 값을 비울 항목(마감일, 안내 '약 n분')
+    open_entry: Optional[bool] = None   # 입장 키 없이 들어오기(2026-11-27)
+    clear: list[str] = Field(default_factory=list)   # 값을 비울 항목(마감일, 안내 '약 n분', 입장 키 없이 들어오기 → 환경 변수 따름)
 
 
 def settings_view(settings: dict) -> dict:
@@ -249,7 +264,12 @@ def settings_view(settings: dict) -> dict:
         key, source = "dev", "local"
     else:
         key, source = None, "none"
-    return {**settings, "entry_key": key, "entry_key_source": source}
+    is_open, open_source = db.open_entry(settings)
+    link, link_source = admin_auth.link_key(settings)
+    view = {k: v for k, v in settings.items() if k != "admin_password_hashes"}   # 암호 해시는 내보내지 않는다
+    return {**view, "entry_key": key, "entry_key_source": source, "open_entry": is_open, "open_entry_source": open_source,
+            "admin_link_key": link, "admin_link_source": link_source,
+            "admin_password_source": {r: admin_auth.password_source(r, settings) for r in admin_auth.ROLES}}
 
 
 @router.get("/settings")
@@ -280,11 +300,63 @@ def put_settings(body: SettingsIn, a: Admin = Depends(require_full)) -> dict:
         except ValueError:
             raise error(422, "bad_deadline")
     for k in body.clear:
-        if k not in ("deadline", "duration_min"):
+        if k not in ("deadline", "duration_min", "open_entry"):
             raise error(422, "bad_clear")
         values[k] = None
     db.save_settings(a.session, values)
     return settings_view(db.get_settings(a.session))
+
+
+# --------------------------------------------------------------------------- #
+# 비밀 관리자 링크·관리자 암호 (전체 권한만, 2026-11-27)
+# --------------------------------------------------------------------------- #
+class LinkIn(BaseModel):
+    action: Literal["rotate", "off"]
+
+
+@router.post("/link")
+def admin_link(body: LinkIn, response: Response, a: Admin = Depends(require_full)) -> dict:
+    """rotate: 새 관리자 링크 키를 만든다(예전 링크·다른 관리자의 로그인은 모두 무효).
+    off: 관리자 화면에서 만든 키를 지운다(환경 변수 ADMIN_LINK_KEY 가 있으면 그 키로, 없으면 링크 확인 안 함)."""
+    db.save_settings(a.session, {"admin_link_key": admin_auth.new_link_key() if body.action == "rotate" else None})
+    settings = db.get_settings(a.session)
+    set_login_cookie(response, a.role, settings)   # 바꾼 사람은 로그인 유지
+    no_store(response)
+    return settings_view(settings)
+
+
+class PasswordIn(BaseModel):
+    current: str = Field(max_length=200)
+    role: Literal["full", "readonly"]
+    new: str = Field(max_length=200)
+
+
+@router.post("/password")
+def change_password(body: PasswordIn, response: Response, a: Admin = Depends(require_full)) -> dict:
+    """관리자 암호 바꾸기. 지금 전체 권한 암호를 한 번 더 확인하고, 새 암호는 PBKDF2 해시로만 저장한다.
+    그 권한으로 로그인해 있던 다른 사람은 다시 로그인해야 한다(바꾼 사람은 로그인 유지)."""
+    settings = a.settings
+    until = admin_auth.locked_until(a.session)
+    if until:
+        raise error(423, "admin_locked", until.isoformat())
+    if admin_auth.role_for_password(body.current, settings) != "full":
+        until = admin_auth.record_failure(a.session)
+        if until:
+            raise error(423, "admin_locked", until.isoformat())
+        raise error(401, "admin_wrong_password")
+    new = body.new
+    if len(new) < admin_auth.MIN_PASSWORD or new != new.strip():
+        raise error(422, "password_too_short")
+    other = "readonly" if body.role == "full" else "full"
+    if admin_auth.role_for_password(new, settings) == other:
+        raise error(422, "password_same_as_other")
+    hashes = dict(settings.get("admin_password_hashes") or {})
+    hashes[body.role] = admin_auth.hash_password(new)
+    db.save_settings(a.session, {"admin_password_hashes": hashes})
+    settings = db.get_settings(a.session)
+    set_login_cookie(response, a.role, settings)
+    no_store(response)
+    return {"ok": True, "role": body.role, "admin_password_source": {r: admin_auth.password_source(r, settings) for r in admin_auth.ROLES}}
 
 
 # --------------------------------------------------------------------------- #

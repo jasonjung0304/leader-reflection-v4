@@ -76,6 +76,7 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 | `ADMIN_PASSWORD_READONLY` | **아직** | ✅ | HR 임원 암호. 전체 권한 암호와 다르게 |
 | `SESSION_SECRET` | **아직** | ✅ | 무작위 32자 이상. 사람이 입력할 일 없음 |
 | `APP_VERSION` | **아직**(예: `4.1.0`) | ✅ `4.1.0-pilot.1` | 화면 하단 표시, Git 태그와 맞춤. 비우면 커밋 앞 7자리 |
+| `OPEN_ENTRY` | (선택) | (선택) | `true` 면 입장 키 없이 기본 주소로 들어옴(Config 유형). 관리자 설정 '입장 키 없이 들어오기'가 우선이라, 보통은 관리자 화면에서 켜고 끈다 |
 
 넣는 방법(4개를 한 번에):
 
@@ -99,6 +100,13 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
    - Settings → Deployment Protection → Vercel Authentication 끄기(앱은 입장 키 없이는 안내 문구만, 관리자는 암호가 있어야 열림)
    - 그 사람을 Vercel 팀에 초대(Hobby 는 팀원 추가가 제한 → Pro 필요할 수 있음)
 3. 시범 참여 링크: `https://leader-reflection-v4-git-pilot-<팀>.vercel.app/?k=<시범 ENTRY_KEY>`, 관리자: 같은 주소 `/admin`
+   - **키 없는 그냥 링크로 들어오게 하려면**(2026-11-27): 시범 `/admin` → 설정 → 입장 키 → **입장 키 없이 들어오기** 체크 → 저장.
+     그러면 `https://leader-reflection-v4-git-pilot-<팀>.vercel.app/` 만으로 들어오고, 동료 추천 링크에도 키가 빠진다. 다시 끄면 키 있는 링크로만 들어온다
+   - Vercel 로그인 보호(2)가 켜져 있으면 키 없는 링크여도 Vercel 팀 구성원만 열 수 있다
+   - **관리자 화면을 비밀 링크로만**(2026-11-27): `/admin` → 설정 → 관리자 링크 → **관리자 링크 만들기**. 나온 `…/admin?a=…` 링크를 관리자에게만 전달한다.
+     그 뒤로는 링크 없이 `/admin` 을 열면 '404 페이지를 찾을 수 없어요'만 보인다. 링크를 새로 만들면 예전 링크와 다른 관리자의 로그인이 모두 풀린다
+   - **관리자 암호를 원하는 값으로**(2026-11-27): `/admin` → 설정 → 관리자 암호 → 지금 전체 권한 암호 확인 → 바꿀 암호(전체·읽기 전용) → 새 암호 2번 → 암호 바꾸기.
+     Vercel 의 `ADMIN_PASSWORD_*` 는 처음 로그인용으로만 남는다. **바꾼 암호를 잊으면**: Supabase(해당 환경 DB) → Table Editor → `setting` 테이블 → `admin_password_hashes` 행 삭제 → Vercel 환경 변수 암호로 다시 로그인
 4. 확인 목록
    - [x] `/api/health` → `{"ok": true, "db": "postgresql"}` (2026-11-27)
    - [x] 키 없이 열면 '안내 메일이나 메신저의 링크로 들어와 주세요' (2026-11-27)

@@ -173,10 +173,30 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "deadline": None,          # ISO 날짜(그날 끝까지) 또는 시각. 지나면 마감
     "target_count": 170,       # 참여율 분모
     "entry_key": None,         # 관리자 설정에서 바꾼 입장 키. 없으면 환경 변수 ENTRY_KEY
+    "open_entry": None,        # True 면 입장 키 없이 기본 주소로 들어옴. None 이면 환경 변수 OPEN_ENTRY(없으면 꺼짐)
+    "admin_link_key": None,    # 비밀 관리자 링크 키(/admin?a=키). 없으면 환경 변수 ADMIN_LINK_KEY, 둘 다 없으면 확인 안 함
+    "admin_password_hashes": None,   # 관리자 화면에서 바꾼 암호 {"full": PBKDF2 해시, "readonly": …}. 없으면 환경 변수 암호
     "dwell_cutoff_sec": 180,   # 머문 시간 자르기 기준(SPEC 5.3)
     "high_threshold": 0.5,     # 축 판정 기준값(SPEC 4.3)
     "duration_min": None,      # 안내 화면 '약 {n}분'. None 이면 숨김
 }
+
+
+TRUTHY = ("1", "true", "yes", "on")
+
+
+def open_entry(settings: dict) -> tuple[bool, str]:
+    """입장 키 없이 기본 주소(키 없는 링크)로 들어오기(2026-11-27). 돌려주는 값: (켜짐 여부, 출처).
+
+    관리자 설정(True/False)이 우선, 설정하지 않았으면 환경 변수 OPEN_ENTRY(1/true/yes/on), 둘 다 없으면 꺼짐(입장 키 필요).
+    """
+    value = settings.get("open_entry")
+    if value is not None:
+        return bool(value), "settings"
+    env = (os.getenv("OPEN_ENTRY") or "").strip().lower()
+    if env:
+        return env in TRUTHY, "env"
+    return False, "default"
 
 
 def get_settings(session: Session) -> dict[str, Any]:

@@ -6,6 +6,10 @@
 - 로그인 실패 5회면 10분 잠금. IP 를 저장하지 않으므로 기기별이 아니라 전체 잠금
 - 로컬(Vercel 밖)에서 환경 변수가 없으면 개발용 값(dev-full / dev-read / 고정 서명 키)을 쓴다.
   Vercel 에서 값이 없으면 관리자 로그인 자체를 막는다
+- (2026-11-27) 관리자 화면에서 바꾼 암호는 PBKDF2 해시로 DB 설정(admin_password_hashes)에 두고, 있으면 환경 변수보다 우선
+- (2026-11-27) 비밀 관리자 링크: 관리자 링크 키(DB 설정 admin_link_key, 없으면 환경 변수 ADMIN_LINK_KEY)를 정해 두면
+  그 키가 붙은 링크(/admin?a=키)로 연 브라우저만 로그인 화면을 볼 수 있다. 키가 없으면 이 확인은 하지 않는다
+- 쿠키의 지문은 '그 권한의 암호(또는 해시) + 관리자 링크 키'로 만든다 → 암호나 링크를 바꾸면 기존 로그인은 모두 풀린다
 """
 from __future__ import annotations
 
@@ -13,6 +17,7 @@ import datetime as dt
 import hashlib
 import hmac
 import os
+import secrets
 from typing import Optional
 
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
@@ -41,37 +46,114 @@ def _env(name: str) -> Optional[str]:
 
 
 def passwords() -> dict[str, Optional[str]]:
+    """환경 변수의 암호(관리자 화면에서 바꾸기 전의 첫 암호)."""
     return {"full": _env("ADMIN_PASSWORD_FULL"), "readonly": _env("ADMIN_PASSWORD_READONLY")}
 
 
-def configured() -> bool:
-    pw = passwords()
-    return bool(pw["full"] and pw["readonly"] and _env("SESSION_SECRET"))
+# --------------------------------------------------------------------------- #
+# 관리자 화면에서 바꾼 암호(PBKDF2-SHA256, 원문은 저장하지 않음)
+# --------------------------------------------------------------------------- #
+PBKDF2_ITERATIONS = 200_000
+MIN_PASSWORD = 10
 
 
-def _fingerprint(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()[:12]
+def hash_password(password: str) -> str:
+    salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PBKDF2_ITERATIONS)
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt.hex()}${dk.hex()}"
+
+
+def _verify_hash(password: str, stored: str) -> bool:
+    try:
+        algo, iterations, salt, digest = stored.split("$")
+        if algo != "pbkdf2_sha256":
+            return False
+        dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), int(iterations))
+    except (ValueError, TypeError):
+        return False
+    return hmac.compare_digest(dk.hex(), digest)
+
+
+def _hashes(settings: Optional[dict]) -> dict:
+    value = (settings or {}).get("admin_password_hashes")
+    return value if isinstance(value, dict) else {}
+
+
+def password_source(role: str, settings: Optional[dict]) -> str:
+    """'settings'(관리자 화면에서 바꿈) 또는 'env'(Vercel 환경 변수)."""
+    return "settings" if _hashes(settings).get(role) else "env"
+
+
+def _secret(role: str, settings: Optional[dict]) -> Optional[str]:
+    """그 권한의 현재 비밀(해시가 있으면 해시 문자열, 없으면 환경 변수 암호) — 쿠키 지문용."""
+    stored = _hashes(settings).get(role)
+    return f"h:{stored}" if stored else (f"e:{passwords()[role]}" if passwords()[role] else None)
+
+
+def _matches(role: str, given: str, settings: Optional[dict]) -> bool:
+    stored = _hashes(settings).get(role)
+    if stored:
+        return _verify_hash(given, stored)
+    pw = passwords()[role]
+    return bool(pw) and hmac.compare_digest(given.encode("utf-8"), pw.encode("utf-8"))
+
+
+# --------------------------------------------------------------------------- #
+# 비밀 관리자 링크
+# --------------------------------------------------------------------------- #
+def link_key(settings: Optional[dict]) -> tuple[Optional[str], str]:
+    """(관리자 링크 키, 출처: settings / env / none). 없으면 링크 확인을 하지 않는다."""
+    value = (settings or {}).get("admin_link_key")
+    if value:
+        return value, "settings"
+    env = os.getenv("ADMIN_LINK_KEY")
+    if env:
+        return env, "env"
+    return None, "none"
+
+
+def link_ok(given: Optional[str], settings: Optional[dict]) -> bool:
+    expected, _ = link_key(settings)
+    if not expected:
+        return True
+    return bool(given) and hmac.compare_digest(given.encode("utf-8"), expected.encode("utf-8"))
+
+
+def new_link_key() -> str:
+    return secrets.token_urlsafe(24)
+
+
+# --------------------------------------------------------------------------- #
+# 로그인 쿠키
+# --------------------------------------------------------------------------- #
+def configured(settings: Optional[dict] = None) -> bool:
+    return bool(_secret("full", settings) and _secret("readonly", settings) and _env("SESSION_SECRET"))
+
+
+def _fingerprint(role: str, settings: Optional[dict]) -> str:
+    base = f"{_secret(role, settings) or ''}|{link_key(settings)[0] or ''}"
+    return hashlib.sha256(base.encode("utf-8")).hexdigest()[:12]
 
 
 def _serializer() -> URLSafeTimedSerializer:
     return URLSafeTimedSerializer(_env("SESSION_SECRET") or "", salt="lr4-admin")
 
 
-def role_for_password(given: str) -> Optional[str]:
-    """두 암호 모두와 상수 시간 비교(어느 쪽이 맞았는지 시간으로 드러나지 않게)."""
+def role_for_password(given: str, settings: Optional[dict] = None) -> Optional[str]:
+    """두 권한 모두 확인(어느 쪽이 맞았는지 시간으로 덜 드러나게 둘 다 계산)."""
     found = None
-    for role, pw in passwords().items():
-        if pw and hmac.compare_digest(given.encode("utf-8"), pw.encode("utf-8")):
+    for role in ROLES:
+        if _matches(role, given, settings):
             found = role
     return found
 
 
-def make_cookie(role: str) -> str:
-    return _serializer().dumps({"r": role, "f": _fingerprint(passwords()[role] or "")})
+def make_cookie(role: str, settings: Optional[dict] = None) -> str:
+    return _serializer().dumps({"r": role, "f": _fingerprint(role, settings)})
 
 
-def read_cookie(value: Optional[str]) -> Optional[str]:
-    if not value or not configured():
+def read_cookie(value: Optional[str], settings: Optional[dict] = None) -> Optional[str]:
+    if not value or not configured(settings):
         return None
     try:
         data = _serializer().loads(value, max_age=MAX_AGE)
@@ -80,7 +162,7 @@ def read_cookie(value: Optional[str]) -> Optional[str]:
     role = data.get("r") if isinstance(data, dict) else None
     if role not in ROLES:
         return None
-    if not hmac.compare_digest(str(data.get("f", "")), _fingerprint(passwords()[role] or "")):
+    if not hmac.compare_digest(str(data.get("f", "")), _fingerprint(role, settings)):
         return None
     return role
 

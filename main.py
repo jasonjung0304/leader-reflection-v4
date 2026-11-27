@@ -158,6 +158,8 @@ def configured_entry_key(settings: dict) -> Optional[str]:
 
 
 def entry_key_ok(request: Request, settings: dict) -> bool:
+    if db.open_entry(settings)[0]:
+        return True   # 열어 둔 동안은 키가 없거나 예전 키여도 들어온다
     expected = configured_entry_key(settings)
     given = request.headers.get("x-entry-key", "")
     if not expected or not given:
@@ -238,7 +240,9 @@ def content(request: Request, session: Session = Depends(get_db)) -> JSONRespons
         "version": app_version(),
         "closed": False,
         "settings": {"cycle_name": settings["cycle_name"], "duration_min": settings["duration_min"],
-                     "dwell_cutoff_sec": settings["dwell_cutoff_sec"]},
+                     "dwell_cutoff_sec": settings["dwell_cutoff_sec"],
+                     # 열어 두면 동료 추천 링크에 입장 키를 넣지 않는다
+                     "open_entry": db.open_entry(settings)[0]},
         "content": load_content(),
     }, headers=headers)
 

@@ -18,6 +18,7 @@ python -m venv .venv
 - 응답자 선택 시뮬레이션: `.venv\Scripts\python scripts\simulate_choices.py . 400` — 가상 리더 400명을 무작위 경로로 진행(임시 DB). `== PROBLEMS ==` 가 `(none)` 이면 통과
 
 - 로컬 입장: `ENTRY_KEY` 가 없으면 입장 키는 `dev` → http://127.0.0.1:8000/?k=dev
+- 입장 키 없이 들어오기: 관리자 설정 → 입장 키 → '입장 키 없이 들어오기'를 켜거나, 환경 변수 `OPEN_ENTRY=true`(관리자 설정이 우선). 켜면 기본 주소만으로 들어온다
 
 ## 사용자 API (모든 요청에 `X-Entry-Key`, 리더명 이후 `X-Participant-Id`, 리더명 전 `X-Device-Id`)
 | 메서드 | 경로 | 용도 |
@@ -46,6 +47,8 @@ python -m venv .venv
 
 ## 관리자 (`/admin`)
 - 로그인: 암호 2종 — `ADMIN_PASSWORD_FULL`(기업문화팀, 전체 권한), `ADMIN_PASSWORD_READONLY`(HR 임원, 읽기 전용). 서명 키 `SESSION_SECRET`
+  - 관리자 화면 설정에서 두 암호를 바꿀 수 있다(PBKDF2 해시로 DB 저장, 환경 변수 암호보다 우선)
+  - 비밀 관리자 링크: 설정 → 관리자 링크 만들기 → `/admin?a=키` 로 연 브라우저만 로그인 화면이 보인다(환경 변수 `ADMIN_LINK_KEY` 로도 가능)
   - 로컬(Vercel 밖)에서 값이 없으면 `dev-full` / `dev-read`. **Vercel 에서 값이 없으면 로그인 불가**
   - 쿠키: HttpOnly·Secure·SameSite=Strict, 8시간. 암호를 바꾸면 기존 로그인은 풀림
   - 로그인 5회 실패 → 10분 잠금. IP 를 저장하지 않으므로 기기별이 아니라 **전체 잠금**
