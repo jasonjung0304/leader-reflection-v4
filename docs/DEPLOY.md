@@ -8,12 +8,12 @@
 | 항목 | 지금 상태 |
 |---|---|
 | GitHub 저장소 | `jasonjung0304/leader-reflection-v4` — **공개(public)**. 브랜치 `main`(기본·본 운영), `pilot`(시범) |
-| Vercel 프로젝트 | `leader-reflection-v4` — Hobby 팀. Production Branch `main`, 함수 리전 `icn1`(서울) |
+| Vercel 프로젝트 | `leader-reflection-v4` — **Pro** 팀(2026-11-27 Hobby 에서 전환). Production Branch `main`, 함수 리전 `icn1`(서울) |
 | 시범 DB | Supabase `leader-reflection-pilot` — 서울 `icn1`, 무료 요금제, **Preview 환경에만** 연결 |
 | 본 운영 DB | Supabase `leader-reflection-prod` — 서울 `icn1`, 무료 요금제, **Production 환경에만** 연결 |
 | 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). **키 없는 이 주소만으로 누구나 사용자 화면에 들어온다**(Vercel 로그인도 필요 없음). `/api/health` → `{"ok":true,"version":"4.1.1-pilot.1","db":"postgresql"}` 확인 |
 | 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.1-pilot.1` + **`OPEN_ENTRY=true`**(Config, 입장 키 없이 들어오기) — 모두 Preview 만. 관리자 암호 2개는 처음 값을 잃어 새 값으로 바꿨다(2026-11-27) |
-| **본 운영 주소** | **`https://leader-reflection-v4.vercel.app/`** — 2026-11-27 **v4.1.0 배포**, 같은 날 **v4.1.1**(화면 하단 "Culture팀", 실천 문장을 1월 목표설정 면담에 맞춤). 키 없는 이 주소만으로 들어온다(`OPEN_ENTRY=true`). 관리자: 같은 주소 `/admin`. `/api/health` → `{"ok":true,"version":"4.1.1","db":"postgresql"}` 확인 |
+| **본 운영 주소** | **`https://greatcandor.gcbp.app/`**(2026-11-27 연결, Vercel 구매 도메인 gcbp.app 의 하위 도메인, Let's Encrypt 인증서 자동). 기본 주소 `https://leader-reflection-v4.vercel.app/` 도 같은 배포로 열림 — 2026-11-27 **v4.1.0 배포**, 같은 날 **v4.1.1**(화면 하단 "Culture팀", 실천 문장을 1월 목표설정 면담에 맞춤). 키 없는 이 주소만으로 들어온다(`OPEN_ENTRY=true`). 관리자: 같은 주소 `/admin`. `/api/health` → `{"ok":true,"version":"4.1.1","db":"postgresql"}` 확인 |
 | 본 운영 환경 변수 | `POSTGRES_*`(본 운영 DB, 자동) + `ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET` + `APP_VERSION=4.1.1` + `OPEN_ENTRY=true` — 모두 Production 만. `ENTRY_KEY` 는 없음(키 없는 링크라 필요 없음, 관리자 설정에서 입장 키를 정할 수 있음). 관리자 암호·서명 키 3개는 **Config 유형으로 저장돼 Vercel 이 'Needs Attention' 표시** → Secret 으로 다시 저장 권장(5장 8) |
 | 배포 보호 | Vercel Authentication **끔**(2026-11-27, 다른 사람도 시범을 테스트하도록) → 시범·본 운영 주소 모두 Vercel 로그인 없이 열린다. 사용자 화면은 앱의 입장 키 규칙(시범은 열어 둠), 관리자 화면은 관리자 암호(+ 만들면 비밀 관리자 링크)로 보호한다(4장 2) |
 | 관리자 링크 | 아직 만들지 않음 → 지금은 `/admin` 으로 누구나 로그인 화면을 볼 수 있다(들어가려면 암호 필요). 시범 `/admin` → 설정 → 관리자 링크 만들기 권장(4장 3) |
@@ -24,7 +24,7 @@
 |---|---|---|
 | Vercel 요금제 | 지금은 **Hobby**(무료)로 시범까지 연결해 두었다. Hobby 플랜의 상업적 사용 제한을 **Vercel 이용 약관(https://vercel.com/legal/terms)** 에서 확인하고, 회사 업무용 본 운영 전에 Pro 등 결제 주체를 정한다. (요금제 안내·공정 사용 페이지에는 이 내용이 적혀 있지 않아 약관 원문 확인이 필요) | 기업문화팀 |
 | 사내 정보보안 검토 | 사외 클라우드(Vercel, Supabase)에 교육 응답·직접 쓴 문장이 저장된다. 개인정보(이름·사번·이메일·소속·IP)는 앱 DB에 없음. Vercel 플랫폼 요청 로그(IP 포함)는 앱 DB와 별개로 Vercel 에 남는다. **소스 코드 저장소가 공개**라 화면 문구·결과 규칙도 누구나 볼 수 있다(비밀값은 저장소에 없음) | 정보보안 |
-| 사내 접속 | 사내 메신저·메일 앱 안 브라우저, 사내 프록시에서 `*.vercel.app` 접속이 막히지 않는지 | IT |
+| 사내 접속 | 사내 메신저·메일 앱 안 브라우저, 사내 프록시에서 `greatcandor.gcbp.app`(.app 은 HTTPS 전용)·`*.vercel.app` 접속이 막히지 않는지 | IT |
 | DB 백업·휴면 | Supabase 무료 요금제의 백업 방식(주기·보관 기간)과, 오래 쓰지 않으면 프로젝트가 일시 중지되는지를 Supabase 문서에서 확인. 본 운영은 유료 요금제 검토 | 기업문화팀 |
 
 ## 1. DB — Supabase, 서울 리전 2개 (완료)
@@ -139,13 +139,14 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 
 **2026-11-27 v4.1.0 배포 완료, 같은 날 v4.1.1 배포**(아래 2·3·4·7 완료). 남은 일: 1(요금제), 5(관리자 설정), 8(Secret 로 다시 저장), 관리자 링크 만들기.
 
-1. 요금제: Vercel·Supabase 를 회사 업무용으로 쓸 결제 주체를 정한다(0장). **지금은 Hobby·무료 요금제로 배포돼 있다**
+1. 요금제: Vercel 은 **2026-11-27 Pro 로 전환**(결제 주체 확인 필요). Supabase 는 아직 무료 요금제 — 본 운영 백업·휴면 정책 확인(0장)
 2. ✅ **Production 환경 변수 채우기**(3장 방법, Environments 는 Production 만): 시범과 **다른** `ADMIN_PASSWORD_FULL`, `ADMIN_PASSWORD_READONLY`, `SESSION_SECRET`, `APP_VERSION=4.1.1`(처음 4.1.0), `OPEN_ENTRY=true`(키 없는 링크. 키 있는 링크로 운영하려면 `OPEN_ENTRY` 대신 `ENTRY_KEY`).
 3. `pilot` → `main` 병합하면 Production 배포가 만들어진다(환경 변수만 바꾼 경우는 Deployments → `main` 최신 배포 → Redeploy).
    `https://leader-reflection-v4.vercel.app/api/health` 가 `{"ok":true,"version":"4.1.1",...,"db":"postgresql"}` 이고, `/?k=<본 운영 입장 키>` 로 첫 화면이 열리는지 확인.
 4. Git 태그를 `APP_VERSION` 과 맞춘다(예: `v4.1.0`, `v4.1.1`). 버전을 올릴 때: Vercel `APP_VERSION`(Production·Preview) 값을 먼저 바꾸고 → 커밋을 올리면 새 배포가 새 값을 읽는다 → 같은 커밋에 태그.
 5. 관리자(`/admin`) 설정: 차수명, 마감일, 대상 인원 170, 안내 화면 '약 n분', 판정 기준값(4장 6).
-6. 안내 링크: `https://leader-reflection-v4.vercel.app/?k=<본 운영 입장 키>` — 메일·메신저 모두 같은 링크.
+6. 안내 링크: **`https://greatcandor.gcbp.app/`**(키 없음) — 메일·메신저 모두 같은 링크. vercel.app 주소와 섞어 보내지 않는다(이어 하기가 주소별 저장).
+   도메인 연결 방법(다시 할 때): Vercel → 프로젝트 → Settings → Domains → Add Existing → `greatcandor.gcbp.app`, Connect to Production. gcbp.app 이 Vercel 에서 산 도메인이라 DNS 는 자동(이름 서버 전파 후 몇 분 안에 Valid Configuration).
    관리자 설정 → 입장 키 화면에 지금 쓰는 링크가 그대로 표시된다.
    (Vercel Authentication 은 2026-11-27 에 껐다. 켜더라도 기본값 Standard Protection 은 Preview 만 보호하므로 본 운영 주소는 Vercel 로그인 없이 열린다)
 7. ✅ 본 운영에서 키 없는 그냥 링크로 들어오게 하려면: Production 에 `OPEN_ENTRY=true` 를 넣거나 본 운영 관리자 설정에서 '입장 키 없이 들어오기'를 켠다(2026-11-27 환경 변수로 켬).

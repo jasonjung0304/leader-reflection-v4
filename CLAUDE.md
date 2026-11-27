@@ -58,6 +58,6 @@ Vercel의 FastAPI 진입 파일 이름 규칙과 `public/` 정적 제공 방식�
 ## 배포
 - GitHub 저장소를 Vercel 프로젝트에 연결: 작업 브랜치 push = Preview 배포, main 병합 = Production 배포
 - DB: Vercel Marketplace의 Postgres(Neon 또는 Supabase) 중 하나를 골라 연결한다(선택은 Claude Code에 맡김, 이유를 README에 기록). 연결하면 `DATABASE_URL` 이 자동으로 들어온다. 리전은 서울에 가장 가까운 곳
-- 주소: Vercel 기본 주소(`*.vercel.app`). 회사 도메인은 쓰지 않는다
+- 주소(2026-11-27 바꿈): 본 운영은 하위 도메인 **`https://greatcandor.gcbp.app/`**(gcbp.app 은 Vercel 에서 구매, 도메인별 앱은 하위 도메인으로 나눈다). 기본 주소 `leader-reflection-v4.vercel.app` 도 같은 배포로 계속 열린다. 시범은 Vercel 브랜치 주소(`*-git-pilot-*.vercel.app`)
 - 화면 하단에는 `content.json` 의 `ui.credit`(지금 "Culture팀")을 표시한다(버전 표시는 2026-11-27 제거). `APP_VERSION` 은 Git 태그와 맞추고 `/api/health`·`/api/content` 응답의 `version` 으로 확인한다
 - Preview와 Production은 DB를 분리한다(시범 응답이 본 데이터에 섞이지 않게)
