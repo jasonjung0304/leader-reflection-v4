@@ -11,10 +11,10 @@
 | Vercel 프로젝트 | `leader-reflection-v4` — Hobby 팀. Production Branch `main`, 함수 리전 `icn1`(서울) |
 | 시범 DB | Supabase `leader-reflection-pilot` — 서울 `icn1`, 무료 요금제, **Preview 환경에만** 연결 |
 | 본 운영 DB | Supabase `leader-reflection-prod` — 서울 `icn1`, 무료 요금제, **Production 환경에만** 연결 |
-| 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). **키 없는 이 주소만으로 누구나 사용자 화면에 들어온다**(Vercel 로그인도 필요 없음). `/api/health` → `{"ok":true,"version":"4.1.0-pilot.1","db":"postgresql"}` 확인 |
-| 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.0-pilot.1` + **`OPEN_ENTRY=true`**(Config, 입장 키 없이 들어오기) — 모두 Preview 만. 관리자 암호 2개는 처음 값을 잃어 새 값으로 바꿨다(2026-11-27) |
-| **본 운영 주소** | **`https://leader-reflection-v4.vercel.app/`** — 2026-11-27 **v4.1.0 배포**. 키 없는 이 주소만으로 들어온다(`OPEN_ENTRY=true`). 관리자: 같은 주소 `/admin`. `/api/health` → `{"ok":true,"version":"4.1.0","db":"postgresql"}` 확인 |
-| 본 운영 환경 변수 | `POSTGRES_*`(본 운영 DB, 자동) + `ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET` + `APP_VERSION=4.1.0` + `OPEN_ENTRY=true` — 모두 Production 만. `ENTRY_KEY` 는 없음(키 없는 링크라 필요 없음, 관리자 설정에서 입장 키를 정할 수 있음). 관리자 암호·서명 키 3개는 **Config 유형으로 저장돼 Vercel 이 'Needs Attention' 표시** → Secret 으로 다시 저장 권장(5장 8) |
+| 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). **키 없는 이 주소만으로 누구나 사용자 화면에 들어온다**(Vercel 로그인도 필요 없음). `/api/health` → `{"ok":true,"version":"4.1.1-pilot.1","db":"postgresql"}` 확인 |
+| 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.1-pilot.1` + **`OPEN_ENTRY=true`**(Config, 입장 키 없이 들어오기) — 모두 Preview 만. 관리자 암호 2개는 처음 값을 잃어 새 값으로 바꿨다(2026-11-27) |
+| **본 운영 주소** | **`https://leader-reflection-v4.vercel.app/`** — 2026-11-27 **v4.1.0 배포**, 같은 날 **v4.1.1**(화면 하단 "Culture팀", 실천 문장을 1월 목표설정 면담에 맞춤). 키 없는 이 주소만으로 들어온다(`OPEN_ENTRY=true`). 관리자: 같은 주소 `/admin`. `/api/health` → `{"ok":true,"version":"4.1.1","db":"postgresql"}` 확인 |
+| 본 운영 환경 변수 | `POSTGRES_*`(본 운영 DB, 자동) + `ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET` + `APP_VERSION=4.1.1` + `OPEN_ENTRY=true` — 모두 Production 만. `ENTRY_KEY` 는 없음(키 없는 링크라 필요 없음, 관리자 설정에서 입장 키를 정할 수 있음). 관리자 암호·서명 키 3개는 **Config 유형으로 저장돼 Vercel 이 'Needs Attention' 표시** → Secret 으로 다시 저장 권장(5장 8) |
 | 배포 보호 | Vercel Authentication **끔**(2026-11-27, 다른 사람도 시범을 테스트하도록) → 시범·본 운영 주소 모두 Vercel 로그인 없이 열린다. 사용자 화면은 앱의 입장 키 규칙(시범은 열어 둠), 관리자 화면은 관리자 암호(+ 만들면 비밀 관리자 링크)로 보호한다(4장 2) |
 | 관리자 링크 | 아직 만들지 않음 → 지금은 `/admin` 으로 누구나 로그인 화면을 볼 수 있다(들어가려면 암호 필요). 시범 `/admin` → 설정 → 관리자 링크 만들기 권장(4장 3) |
 
@@ -77,7 +77,7 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 | `ADMIN_PASSWORD_FULL` | ✅(Config → Secret 권장) | ✅ | 기업문화팀 암호. 길고 추측하기 어렵게 |
 | `ADMIN_PASSWORD_READONLY` | ✅(Config → Secret 권장) | ✅ | HR 임원 암호. 전체 권한 암호와 다르게 |
 | `SESSION_SECRET` | ✅(Config → Secret 권장) | ✅ | 무작위 32자 이상. 사람이 입력할 일 없음 |
-| `APP_VERSION` | ✅ `4.1.0` | ✅ `4.1.0-pilot.1` | Git 태그와 맞춤(화면 하단에는 표시 안 함, 2026-11-27부터 하단은 "Culture팀"). 비우면 커밋 앞 7자리 |
+| `APP_VERSION` | ✅ `4.1.1` | ✅ `4.1.1-pilot.1` | Git 태그와 맞춤(화면 하단에는 표시 안 함, 2026-11-27부터 하단은 "Culture팀"). 비우면 커밋 앞 7자리 |
 | `OPEN_ENTRY` | ✅ `true`(2026-11-27) | ✅ `true`(2026-11-27) | `true` 면 입장 키 없이 기본 주소로 들어옴(Config 유형). 관리자 설정 '입장 키 없이 들어오기'가 우선(관리자 화면에서 끄면 다시 키 필요) |
 
 넣는 방법(4개를 한 번에):
@@ -137,13 +137,13 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 
 ## 5. 본 운영 (Production)
 
-**2026-11-27 v4.1.0 배포 완료**(아래 2·3·4·7 완료). 남은 일: 1(요금제), 5(관리자 설정), 8(Secret 로 다시 저장), 관리자 링크 만들기.
+**2026-11-27 v4.1.0 배포 완료, 같은 날 v4.1.1 배포**(아래 2·3·4·7 완료). 남은 일: 1(요금제), 5(관리자 설정), 8(Secret 로 다시 저장), 관리자 링크 만들기.
 
 1. 요금제: Vercel·Supabase 를 회사 업무용으로 쓸 결제 주체를 정한다(0장). **지금은 Hobby·무료 요금제로 배포돼 있다**
-2. ✅ **Production 환경 변수 채우기**(3장 방법, Environments 는 Production 만): 시범과 **다른** `ADMIN_PASSWORD_FULL`, `ADMIN_PASSWORD_READONLY`, `SESSION_SECRET`, `APP_VERSION=4.1.0`, `OPEN_ENTRY=true`(키 없는 링크. 키 있는 링크로 운영하려면 `OPEN_ENTRY` 대신 `ENTRY_KEY`).
+2. ✅ **Production 환경 변수 채우기**(3장 방법, Environments 는 Production 만): 시범과 **다른** `ADMIN_PASSWORD_FULL`, `ADMIN_PASSWORD_READONLY`, `SESSION_SECRET`, `APP_VERSION=4.1.1`(처음 4.1.0), `OPEN_ENTRY=true`(키 없는 링크. 키 있는 링크로 운영하려면 `OPEN_ENTRY` 대신 `ENTRY_KEY`).
 3. `pilot` → `main` 병합하면 Production 배포가 만들어진다(환경 변수만 바꾼 경우는 Deployments → `main` 최신 배포 → Redeploy).
-   `https://leader-reflection-v4.vercel.app/api/health` 가 `{"ok":true,"version":"4.1.0",...,"db":"postgresql"}` 이고, `/?k=<본 운영 입장 키>` 로 첫 화면이 열리는지 확인.
-4. Git 태그를 `APP_VERSION` 과 맞춘다(예: `v4.1.0`).
+   `https://leader-reflection-v4.vercel.app/api/health` 가 `{"ok":true,"version":"4.1.1",...,"db":"postgresql"}` 이고, `/?k=<본 운영 입장 키>` 로 첫 화면이 열리는지 확인.
+4. Git 태그를 `APP_VERSION` 과 맞춘다(예: `v4.1.0`, `v4.1.1`). 버전을 올릴 때: Vercel `APP_VERSION`(Production·Preview) 값을 먼저 바꾸고 → 커밋을 올리면 새 배포가 새 값을 읽는다 → 같은 커밋에 태그.
 5. 관리자(`/admin`) 설정: 차수명, 마감일, 대상 인원 170, 안내 화면 '약 n분', 판정 기준값(4장 6).
 6. 안내 링크: `https://leader-reflection-v4.vercel.app/?k=<본 운영 입장 키>` — 메일·메신저 모두 같은 링크.
    관리자 설정 → 입장 키 화면에 지금 쓰는 링크가 그대로 표시된다.
