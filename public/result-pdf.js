@@ -251,7 +251,7 @@ window.ResultPdf = (() => {
     }
 
     // 바닥글(쪽마다)
-    const footer = fmt(P.footer, { date: d.date, version: d.version || '' });
+    const footer = fmt(P.footer, { date: d.date, version: d.version || '', credit: d.credit || '' });
     doc.pages.forEach((c, i) => {
       const g = c.getContext('2d');
       g.font = `400 8px ${FONT}`; g.fillStyle = COL.ink4;

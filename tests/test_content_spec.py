@@ -113,3 +113,10 @@ def test_result_texts_present():
     assert r["r2"]["max_items"] == 3 and r["r3"]["max_items"] == 3   # 2026-11-26 결정: 결과 2·3 최대 3개
     assert r["r2"]["empty"] and r["r3"]["empty"] and r["r3"]["empty_signals"] and r["r1"]["recall_none"]
     assert "{quadrant_label}" in r["r1"]["title"]
+
+
+def test_footer_shows_team_not_version():
+    """2026-11-27: 화면·PDF 하단에는 버전 대신 만든 팀을 보여 준다(버전은 /api/health 로만)."""
+    assert C["ui"]["credit"] == "Culture팀"
+    footer = C["done"]["pdf"]["footer"]
+    assert "{credit}" in footer and "{version}" not in footer

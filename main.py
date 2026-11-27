@@ -50,7 +50,7 @@ MOBILE_UA_RE = re.compile(r"Mobi|Android|iPhone|iPad|iPod", re.I)
 
 
 def app_version() -> str:
-    """화면 하단 버전. APP_VERSION(Git 태그와 맞춤)이 없으면 Vercel 커밋 앞 7자리, 로컬은 dev."""
+    """앱 버전(/api/health·/api/content 응답, 화면 하단에는 표시 안 함). APP_VERSION(Git 태그와 맞춤)이 없으면 Vercel 커밋 앞 7자리, 로컬은 dev."""
     v = os.getenv("APP_VERSION")
     if v:
         return v
@@ -226,18 +226,20 @@ def content(request: Request, session: Session = Depends(get_db)) -> JSONRespons
     """입장 확인 겸 문구 내려받기. 키가 없거나 틀리면 entry_denied 문구만, 마감이면 closed 문구만."""
     settings = db.get_settings(session)
     notice = load_content()["notice"]
+    credit = load_content()["ui"].get("credit", "")   # 화면 하단 표시(버전 대신, 2026-11-27)
     headers = {"Cache-Control": "no-store"}
     if not entry_key_ok(request, settings):
         reason = "missing" if not request.headers.get("x-entry-key") else "wrong"
         record_event(session, "entry_denied", request, props={"reason": reason}, cycle_id=settings["cycle_id"])
         session.commit()
-        return JSONResponse({"error": "entry_denied", "message": notice["entry_denied"], "version": app_version()},
+        return JSONResponse({"error": "entry_denied", "message": notice["entry_denied"], "version": app_version(), "credit": credit},
                             status_code=403, headers=headers)
     if is_closed(settings):
-        return JSONResponse({"closed": True, "message": notice["closed"], "version": app_version()},
+        return JSONResponse({"closed": True, "message": notice["closed"], "version": app_version(), "credit": credit},
                             headers=headers)
     return JSONResponse({
         "version": app_version(),
+        "credit": credit,
         "closed": False,
         "settings": {"cycle_name": settings["cycle_name"], "duration_min": settings["duration_min"],
                      "dwell_cutoff_sec": settings["dwell_cutoff_sec"],

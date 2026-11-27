@@ -77,7 +77,7 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 | `ADMIN_PASSWORD_FULL` | ✅(Config → Secret 권장) | ✅ | 기업문화팀 암호. 길고 추측하기 어렵게 |
 | `ADMIN_PASSWORD_READONLY` | ✅(Config → Secret 권장) | ✅ | HR 임원 암호. 전체 권한 암호와 다르게 |
 | `SESSION_SECRET` | ✅(Config → Secret 권장) | ✅ | 무작위 32자 이상. 사람이 입력할 일 없음 |
-| `APP_VERSION` | ✅ `4.1.0` | ✅ `4.1.0-pilot.1` | 화면 하단 표시, Git 태그와 맞춤. 비우면 커밋 앞 7자리 |
+| `APP_VERSION` | ✅ `4.1.0` | ✅ `4.1.0-pilot.1` | Git 태그와 맞춤(화면 하단에는 표시 안 함, 2026-11-27부터 하단은 "Culture팀"). 비우면 커밋 앞 7자리 |
 | `OPEN_ENTRY` | ✅ `true`(2026-11-27) | ✅ `true`(2026-11-27) | `true` 면 입장 키 없이 기본 주소로 들어옴(Config 유형). 관리자 설정 '입장 키 없이 들어오기'가 우선(관리자 화면에서 끄면 다시 키 필요) |
 
 넣는 방법(4개를 한 번에):

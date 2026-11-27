@@ -55,7 +55,7 @@
 | `ADMIN_PASSWORD_FULL` | 관리자 전체 권한 암호 (기업문화팀) |
 | `ADMIN_PASSWORD_READONLY` | 관리자 읽기 전용 암호 (HR 임원) |
 | `SESSION_SECRET` | 관리자 쿠키 서명 키 |
-| `APP_VERSION` | 화면 하단 표시 버전 |
+| `APP_VERSION` | 앱 버전(Git 태그와 맞춤). 화면 하단에는 표시하지 않고 `/api/content` 응답에만 실린다. 화면 하단·PDF 바닥글은 `content.json` 의 `ui.credit`(2026-11-27) |
 
 ## 3. 화면 흐름 (사용자 21개)
 
@@ -321,7 +321,7 @@ care 낮음 + challenge 낮음 → mi 방임형 리더
 1. Claude Code로 개발 → 로컬(SQLite) 확인 → GitHub push
 2. 작업 브랜치 = Vercel Preview 배포(시범 운영용 DB 연결). main 병합 = Production 배포(본 운영 DB). 두 환경의 DB와 입장 키를 분리
 3. Vercel 프로젝트 설정: 함수 리전 `icn1`, 환경 변수(2장), Production 도메인
-4. 앱 버전(`APP_VERSION`)을 화면 하단에 표시하고 Git 태그와 맞춘다
+4. 앱 버전(`APP_VERSION`)은 Git 태그와 맞춘다. 화면 하단에는 버전 대신 `ui.credit`("Culture팀")을 표시(2026-11-27)
 5. 시범 운영: 기업문화팀 내부(Preview) → 본 운영 첫 주 완료 시간 중앙값으로 안내 화면 '약 {n}분' 재확인
 6. 안내 발송: 링크 = Production 주소(**Vercel 기본 주소 `*.vercel.app` 사용**, 회사 도메인 연결 없음) + `?k=입장키`. 메일·메신저 두 경로 모두 같은 링크
 

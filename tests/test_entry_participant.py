@@ -102,7 +102,8 @@ def test_closed(client):
         db.save_settings(s, {"deadline": "2000-01-01"})
     r = client.get("/api/content", headers=hdr())
     assert r.status_code == 200 and r.json() == {
-        "closed": True, "message": main.load_content()["notice"]["closed"], "version": "test-1"}
+        "closed": True, "message": main.load_content()["notice"]["closed"], "version": "test-1",
+        "credit": main.load_content()["ui"]["credit"]}
     assert create(client).status_code == 403
     assert client.get("/api/me", headers=hdr(pid=pid)).json()["error"] == "closed"
 

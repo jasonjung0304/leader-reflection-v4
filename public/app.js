@@ -138,7 +138,8 @@
   }
   function messageOnly(text) {
     document.body.className = 'theme-white';
-    $screen.replaceChildren(h('p', { class: 'msg-only' }, text), h('p', { class: 'hint', style: 'padding-bottom:12px' }, S.version ? 'v' + S.version : ''));
+    // 화면 하단 표시: 버전 대신 만든 팀(2026-11-27). 버전은 /api/health 로만 확인
+    $screen.replaceChildren(h('p', { class: 'msg-only' }, text), h('p', { class: 'hint', style: 'padding-bottom:12px' }, S.credit || ''));
   }
 
   // ----------------------------------------------------------------------- //
@@ -196,7 +197,7 @@
       else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-label', disabledAria || aria); }
     };
     if (o.enabled === false) setEnabled(false, o.disabledAria);
-    const spacer = h('span', { class: 'spacer', 'aria-hidden': o.version ? null : 'true' }, o.version && S.version ? 'v' + S.version : null);
+    const spacer = h('span', { class: 'spacer', 'aria-hidden': o.credit ? null : 'true' }, o.credit && S.credit ? S.credit : null);
     return { el: h('div', { class: 'ftr-arrow' }, btn, spacer), btn, setEnabled };
   }
   function quadrant(highlight) {
@@ -583,7 +584,7 @@
         // 앱 안 브라우저로 처음 연 경우만: 시작 전에 바깥 브라우저로 옮기도록(이미 기록이 있으면 옮기면 이어 하기가 끊겨 안내하지 않음)
         inApp() && !S.participantId ? h('p', { class: 'inapp-hint' }, n.inapp_hint) : null),
       // 리더 기록이 있는데 아직 불러오지 않았으면(추천 링크로 안내부터 연 경우) 멈춘 곳으로 이어 간다
-      arrowFooter(UI.notice_next_aria, () => (S.participantId && !S.me ? resume() : go('leader_name')), { version: true }).el,
+      arrowFooter(UI.notice_next_aria, () => (S.participantId && !S.me ? resume() : go('leader_name')), { credit: true }).el,
     ];
   };
 
@@ -1162,7 +1163,7 @@
     const data = {
       content: C, nick: S.nick, leader: S.me.leader_name, quadrant: S.check.quadrant, results: S.check.results,
       phrase: donePhrase(), situationLabel: topSituationLabel(S.check.situations),
-      cycleName: S.settings.cycle_name, date: dateStamp('.'), version: S.version,
+      cycleName: S.settings.cycle_name, date: dateStamp('.'), version: S.version, credit: S.credit,
     };
     const promise = new Promise((res) => setTimeout(res, 300)).then(() => window.ResultPdf.build(data));
     promise.catch(() => {});
@@ -1289,6 +1290,7 @@
     readEntryParams();
     const r = await api('GET', '/api/content');
     S.version = r.data.version || '';
+    S.credit = r.data.credit || '';
     if (r.status === 0) return messageOnly('연결하지 못했어요. 잠시 후 다시 열어 주세요.'); // 문구를 받기 전이라 예외적으로 코드에 둠
     // 입장 키가 틀린 경우만 저장된 키를 지운다(사내 프록시 등이 막은 403 은 본문이 달라 '연결하지 못했어요'로)
     if (r.status === 403 && r.data.error === 'entry_denied') { Store.del('entry_key'); return messageOnly(r.data.message); }
