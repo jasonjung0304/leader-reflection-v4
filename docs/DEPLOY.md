@@ -13,7 +13,7 @@
 | 본 운영 DB | Supabase `leader-reflection-prod` — 서울 `icn1`, 무료 요금제, **Production 환경에만** 연결 |
 | 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). `/api/health` → `{"ok":true,"version":"4.1.0-pilot.1","db":"postgresql"}` 확인 |
 | 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.0-pilot.1` — 모두 Preview 만 |
-| 본 운영 환경 변수 | DB 주소(`POSTGRES_*`)만 있음. **입장 키·관리자 암호·서명 키는 아직 없음** → 본 운영 주소(`leader-reflection-v4.vercel.app`)는 `/api/health` 가 `db: unavailable`(503)이고 아무도 들어올 수 없다(5장에서 채움) |
+| 본 운영 환경 변수 | DB 주소(`POSTGRES_*`)만 있음. **입장 키·관리자 암호·서명 키는 아직 없음** → 본 운영 주소(`leader-reflection-v4.vercel.app`)는 `/api/health` 가 `{"ok":true,"db":"postgresql"}`(본 운영 DB 연결됨)지만 입장 키가 없어 화면은 '안내 메일이나 메신저의 링크로 들어와 주세요'만 보이고(`/api/content` 403), 관리자 로그인도 안 된다(5장에서 채움) |
 | 배포 보호 | Vercel Authentication(기본값) **켜 둠**(2026-11-27 결정) → 시범 주소는 이 Vercel 팀에 로그인한 사람만 열 수 있다(4장 2) |
 
 ## 0. 배포 전 확인 (SPEC 10장)
@@ -129,7 +129,7 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 1. 요금제: Vercel·Supabase 를 회사 업무용으로 쓸 결제 주체를 정한다(0장).
 2. **Production 환경 변수 채우기**(3장 방법, Environments 는 Production 만): 시범과 **다른** `ENTRY_KEY`, `ADMIN_PASSWORD_FULL`, `ADMIN_PASSWORD_READONLY`, `SESSION_SECRET`, 그리고 `APP_VERSION`(예: `4.1.0`).
 3. `pilot` → `main` 병합하면 Production 배포가 만들어진다(환경 변수만 바꾼 경우는 Deployments → `main` 최신 배포 → Redeploy).
-   `https://leader-reflection-v4.vercel.app/api/health` 가 `{"ok":true,...,"db":"postgresql"}` 인지 확인.
+   `https://leader-reflection-v4.vercel.app/api/health` 가 `{"ok":true,"version":"4.1.0",...,"db":"postgresql"}` 이고, `/?k=<본 운영 입장 키>` 로 첫 화면이 열리는지 확인.
 4. Git 태그를 `APP_VERSION` 과 맞춘다(예: `v4.1.0`).
 5. 관리자(`/admin`) 설정: 차수명, 마감일, 대상 인원 170, 안내 화면 '약 n분', 판정 기준값(4장 6).
 6. 안내 링크: `https://leader-reflection-v4.vercel.app/?k=<본 운영 입장 키>` — 메일·메신저 모두 같은 링크.
