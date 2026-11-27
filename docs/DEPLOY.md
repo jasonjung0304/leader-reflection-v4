@@ -11,10 +11,11 @@
 | Vercel 프로젝트 | `leader-reflection-v4` — Hobby 팀. Production Branch `main`, 함수 리전 `icn1`(서울) |
 | 시범 DB | Supabase `leader-reflection-pilot` — 서울 `icn1`, 무료 요금제, **Preview 환경에만** 연결 |
 | 본 운영 DB | Supabase `leader-reflection-prod` — 서울 `icn1`, 무료 요금제, **Production 환경에만** 연결 |
-| 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). `/api/health` → `{"ok":true,"version":"4.1.0-pilot.1","db":"postgresql"}` 확인 |
-| 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.0-pilot.1` — 모두 Preview 만 |
+| 시범 주소 | `leader-reflection-v4-git-pilot-<팀>.vercel.app`(정확한 주소: Vercel → Deployments → `pilot` 줄). **키 없는 이 주소만으로 누구나 사용자 화면에 들어온다**(Vercel 로그인도 필요 없음). `/api/health` → `{"ok":true,"version":"4.1.0-pilot.1","db":"postgresql"}` 확인 |
+| 시범 환경 변수 | `ENTRY_KEY`·`ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`·`SESSION_SECRET`(Secret) + `APP_VERSION=4.1.0-pilot.1` + **`OPEN_ENTRY=true`**(Config, 입장 키 없이 들어오기) — 모두 Preview 만. 관리자 암호 2개는 처음 값을 잃어 새 값으로 바꿨다(2026-11-27) |
 | 본 운영 환경 변수 | DB 주소(`POSTGRES_*`)만 있음. **입장 키·관리자 암호·서명 키는 아직 없음** → 본 운영 주소(`leader-reflection-v4.vercel.app`)는 `/api/health` 가 `{"ok":true,"db":"postgresql"}`(본 운영 DB 연결됨)지만 입장 키가 없어 화면은 '안내 메일이나 메신저의 링크로 들어와 주세요'만 보이고(`/api/content` 403), 관리자 로그인도 안 된다(5장에서 채움) |
-| 배포 보호 | Vercel Authentication(기본값) **켜 둠**(2026-11-27 결정) → 시범 주소는 이 Vercel 팀에 로그인한 사람만 열 수 있다(4장 2) |
+| 배포 보호 | Vercel Authentication **끔**(2026-11-27, 다른 사람도 시범을 테스트하도록) → 시범·본 운영 주소 모두 Vercel 로그인 없이 열린다. 사용자 화면은 앱의 입장 키 규칙(시범은 열어 둠), 관리자 화면은 관리자 암호(+ 만들면 비밀 관리자 링크)로 보호한다(4장 2) |
+| 관리자 링크 | 아직 만들지 않음 → 지금은 `/admin` 으로 누구나 로그인 화면을 볼 수 있다(들어가려면 암호 필요). 시범 `/admin` → 설정 → 관리자 링크 만들기 권장(4장 3) |
 
 ## 0. 배포 전 확인 (SPEC 10장)
 
@@ -76,7 +77,7 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 | `ADMIN_PASSWORD_READONLY` | **아직** | ✅ | HR 임원 암호. 전체 권한 암호와 다르게 |
 | `SESSION_SECRET` | **아직** | ✅ | 무작위 32자 이상. 사람이 입력할 일 없음 |
 | `APP_VERSION` | **아직**(예: `4.1.0`) | ✅ `4.1.0-pilot.1` | 화면 하단 표시, Git 태그와 맞춤. 비우면 커밋 앞 7자리 |
-| `OPEN_ENTRY` | (선택) | (선택) | `true` 면 입장 키 없이 기본 주소로 들어옴(Config 유형). 관리자 설정 '입장 키 없이 들어오기'가 우선이라, 보통은 관리자 화면에서 켜고 끈다 |
+| `OPEN_ENTRY` | (선택, 없음) | ✅ `true`(2026-11-27) | `true` 면 입장 키 없이 기본 주소로 들어옴(Config 유형). 관리자 설정 '입장 키 없이 들어오기'가 우선(관리자 화면에서 끄면 다시 키 필요) |
 
 넣는 방법(4개를 한 번에):
 
@@ -95,28 +96,29 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 1. 시범 배포 만들기: `pilot` 브랜치에 push 하면 Preview 배포가 자동으로 만들어진다.
    새 커밋 없이 만들려면 Vercel → Deployments → 오른쪽 위 ⋯ → **Create Deployment** → `pilot` 입력 → Create Preview Deployment.
    브랜치 고정 주소 `leader-reflection-v4-git-pilot-<팀>.vercel.app` 를 쓴다(배포마다 바뀌는 주소 말고).
-2. 배포 보호(Vercel Authentication): **켜 둠**(2026-11-27 결정). 시범 주소를 열면 Vercel 로그인을 먼저 요구하고, 이 Vercel 팀 구성원만 들어올 수 있다.
-   Vercel 계정이 없는 사람이 시범에 참여하게 하려면 둘 중 하나:
-   - Settings → Deployment Protection → Vercel Authentication 끄기(앱은 입장 키 없이는 안내 문구만, 관리자는 암호가 있어야 열림)
-   - 그 사람을 Vercel 팀에 초대(Hobby 는 팀원 추가가 제한 → Pro 필요할 수 있음)
-3. 시범 참여 링크: `https://leader-reflection-v4-git-pilot-<팀>.vercel.app/?k=<시범 ENTRY_KEY>`, 관리자: 같은 주소 `/admin`
-   - **키 없는 그냥 링크로 들어오게 하려면**(2026-11-27): 시범 `/admin` → 설정 → 입장 키 → **입장 키 없이 들어오기** 체크 → 저장.
-     그러면 `https://leader-reflection-v4-git-pilot-<팀>.vercel.app/` 만으로 들어오고, 동료 추천 링크에도 키가 빠진다. 다시 끄면 키 있는 링크로만 들어온다
-   - Vercel 로그인 보호(2)가 켜져 있으면 키 없는 링크여도 Vercel 팀 구성원만 열 수 있다
+2. 배포 보호(Vercel Authentication): **끔**(2026-11-27, Settings → Deployment Protection → Require Log In 끄기 → Save → 확인 문구 입력).
+   Vercel 계정이 없는 사람도 시범 주소를 열 수 있다. 다시 켜면(Require Log In → Standard Protection) 이 Vercel 팀에 로그인한 사람만 Preview 주소를 볼 수 있다.
+   보호를 끈 동안에는 앱 자체의 보호만 남는다: 사용자 화면은 입장 키(시범은 `OPEN_ENTRY=true` 로 열어 둠), 관리자 화면은 관리자 암호와 비밀 관리자 링크
+3. 시범 참여 링크: **`https://leader-reflection-v4-git-pilot-<팀>.vercel.app/`**(키 없음 — 2026-11-27 부터 `OPEN_ENTRY=true`), 관리자: 같은 주소 `/admin`
+   - 입장 키 없이 들어오기는 Vercel 환경 변수 `OPEN_ENTRY=true`(Preview)로 켜 두었다. 관리자 화면 설정 → 입장 키 → '입장 키 없이 들어오기'를 끄면(관리자 설정이 우선) 다시 `/?k=<시범 ENTRY_KEY>` 링크로만 들어온다.
+     다시 켜려면 그 체크를 켜거나, 관리자 설정을 비우고 환경 변수에 맡긴다. 켜 두면 동료 추천 링크에도 키가 빠진다
+   - 시범 입장 키를 잊었으면: 관리자 화면 설정 → 입장 키의 '현재 입장 키'·'안내 링크'에서 확인
+   - 관리자 암호를 잊었으면(관리자 화면에서 바꾸기 전): Vercel → Environment Variables → `ADMIN_PASSWORD_FULL`·`ADMIN_PASSWORD_READONLY`(Preview) → ⋯ → Edit → 새 값 → Save → `pilot` 다시 배포(1의 Create Deployment)
    - **관리자 화면을 비밀 링크로만**(2026-11-27): `/admin` → 설정 → 관리자 링크 → **관리자 링크 만들기**. 나온 `…/admin?a=…` 링크를 관리자에게만 전달한다.
      그 뒤로는 링크 없이 `/admin` 을 열면 '404 페이지를 찾을 수 없어요'만 보인다. 링크를 새로 만들면 예전 링크와 다른 관리자의 로그인이 모두 풀린다
    - **관리자 암호를 원하는 값으로**(2026-11-27): `/admin` → 설정 → 관리자 암호 → 지금 전체 권한 암호 확인 → 바꿀 암호(전체·읽기 전용) → 새 암호 2번 → 암호 바꾸기.
      Vercel 의 `ADMIN_PASSWORD_*` 는 처음 로그인용으로만 남는다. **바꾼 암호를 잊으면**: Supabase(해당 환경 DB) → Table Editor → `setting` 테이블 → `admin_password_hashes` 행 삭제 → Vercel 환경 변수 암호로 다시 로그인
 4. 확인 목록
    - [x] `/api/health` → `{"ok": true, "db": "postgresql"}` (2026-11-27)
-   - [x] 키 없이 열면 '안내 메일이나 메신저의 링크로 들어와 주세요' (2026-11-27)
+   - [x] 입장 키를 켜 둔 동안 키 없이 열면 '안내 메일이나 메신저의 링크로 들어와 주세요' (2026-11-27)
+   - [x] `OPEN_ENTRY=true` 뒤 키 없는 시범 주소로 첫 화면이 열림, Vercel 로그인 없이(보호 끈 뒤) 바깥에서도 열림 (2026-11-27)
    - [x] `/admin` 로그인 화면이 열림 (2026-11-27)
-   - [ ] `/?k=<시범 입장 키>` 로 처음부터 완료까지 진행, 중간에 닫고 다시 열면 이어 하기
+   - [ ] 시범 주소로 처음부터 완료까지 진행, 중간에 닫고 다시 열면 이어 하기
    - [ ] `/admin` 두 암호로 로그인, 읽기 전용은 설정·CSV 가 보이지 않음
    - [ ] 관리자 설정: 차수명, 마감일, 대상 인원
    - [ ] 기기별: iOS Safari, Android Chrome, PC Chrome·Edge, **사내 메신저 안 브라우저, 메일 앱 안 브라우저** —
          PDF 다운받기(앱 안 브라우저에서 파일이 받아지는지), 동료에게 추천하기(링크가 복사되는지), 꽃가루·카운트다운
-         (배포 보호가 켜져 있으면 앱 안 브라우저에서도 Vercel 로그인이 필요하다)
+         (배포 보호를 다시 켜면 앱 안 브라우저에서도 Vercel 로그인이 필요하다)
    - [ ] 앱 안 브라우저로 열면 안내 화면에 '메신저·메일 앱 안에서 열었어요…' 안내가, 완료 화면에 '캡처해 두세요' 한 줄이 나오는지.
          나오지 않는 앱이 있으면 그 앱의 User-Agent 를 알려 주세요(`public/app.js` 의 `browserFamily` 에 추가). 관리자 4.5 기기별 표 아래 '앱 안 브라우저로 연 기기' 수가 늘었는지
    - [ ] 앱 안 브라우저에서 PDF 가 받아지지 않으면: 안내 메일·메신저 문구(아래 4-1)의 '다른 브라우저로 열기'를 꼭 넣는다
@@ -142,7 +144,9 @@ DB 제공사로 **Supabase** 를 쓴다(이유는 README 'DB 제공사 선택').
 5. 관리자(`/admin`) 설정: 차수명, 마감일, 대상 인원 170, 안내 화면 '약 n분', 판정 기준값(4장 6).
 6. 안내 링크: `https://leader-reflection-v4.vercel.app/?k=<본 운영 입장 키>` — 메일·메신저 모두 같은 링크.
    관리자 설정 → 입장 키 화면에 지금 쓰는 링크가 그대로 표시된다.
-   (Vercel Authentication 기본값은 Preview 만 보호하므로 본 운영 주소는 Vercel 로그인 없이 열린다. Settings → Deployment Protection 에서 확인)
+   (Vercel Authentication 은 2026-11-27 에 껐다. 켜더라도 기본값 Standard Protection 은 Preview 만 보호하므로 본 운영 주소는 Vercel 로그인 없이 열린다)
+7. 본 운영에서 키 없는 그냥 링크로 들어오게 하려면: Production 에 `OPEN_ENTRY=true` 를 넣거나 본 운영 관리자 설정에서 '입장 키 없이 들어오기'를 켠다.
+   그러면 주소를 아는 누구나 참여할 수 있으므로 대시보드 1.1 경고·4.6 추천 유입을 자주 확인한다. 아니면 지금처럼 `/?k=<입장 키>` 링크를 보낸다
 
 ## 6. 운영 중
 
