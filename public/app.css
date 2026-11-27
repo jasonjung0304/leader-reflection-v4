@@ -13,7 +13,7 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { margin: 0; height: 100%; }
+html, body { margin: 0; }
 body {
   background: var(--surface); color: var(--ink); font-family: var(--font);
   font-size: 16px; line-height: 1.6; letter-spacing: -0.01em;
@@ -33,23 +33,29 @@ h1[tabindex="-1"]:focus { outline: none; }
 .pre { white-space: pre-line; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- 화면 틀: 100dvh, 상단·하단 고정, 가운데만 스크롤 ---------- */
-.app { max-width: 480px; margin: 0 auto; height: 100vh; height: 100dvh; }
-.screen { position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
-.hdr { height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+/* ---------- 화면 틀(2026-11-27 바꿈): 페이지 자체가 스크롤, 상단·하단은 화면 끝에 붙여 둔다 ----------
+   휴대폰 브라우저(아이폰 Safari·Chrome, 안드로이드 크롬)는 '페이지'가 스크롤될 때만 주소창·하단 막대를 접는다.
+   예전처럼 화면 높이를 100dvh 로 묶고 가운데만 스크롤하면 막대가 접히지 않아, 브라우저 하단이 둥근 사각형으로 남았다.
+   화면 높이를 '막대를 접은 높이'(100lvh)로 잡아 짧은 화면도 한 번 밀어 올리면 막대가 접히고 화면이 꽉 찬다 */
+.app { max-width: 480px; margin: 0 auto; }
+.screen { position: relative; min-height: 100vh; min-height: 100lvh; display: flex; flex-direction: column; overflow-x: clip; }
+.hdr { position: sticky; top: 0; z-index: 2; background: var(--surface); height: 56px; padding: 0 20px 0 4px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.theme-gradient .hdr, .theme-black .hdr { background: transparent; }
 .hdr.center { justify-content: center; padding: 0 20px; }
 .hdr-title { font-size: 14px; font-weight: 700; }
 .hdr-side { min-width: 44px; font-size: 12px; color: var(--ink-tertiary); text-align: right; white-space: nowrap; }
 .icon-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; padding: 0; border-radius: 22px; }
 .icon-btn:hover { background: rgba(0,0,0,.05); }
 .theme-gradient .icon-btn:hover { background: rgba(255,255,255,.12); }
-.progress { height: 4px; background: var(--border-subtle); flex-shrink: 0; }
+.progress { position: sticky; top: 56px; z-index: 2; height: 4px; background: var(--border-subtle); flex-shrink: 0; }
 .progress > div { height: 4px; background: var(--ink); }
-.main { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; }
+.main { flex: 1 0 auto; display: flex; flex-direction: column; }
 .main.center { align-items: center; justify-content: center; text-align: center; padding: 24px 28px; gap: 20px; }
 .main.pad { padding: 24px 20px 20px; gap: 24px; }
-.ftr { padding: 12px 20px 20px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-.ftr-arrow { flex-shrink: 0; padding: 0 20px 16px; display: flex; flex-direction: column; align-items: center; }
+/* 하단: 막대를 접으면 화면 맨 아래(홈 표시줄)까지 내려오므로 그만큼(safe-area) 띄운다 */
+.ftr { position: sticky; bottom: 0; z-index: 2; background: var(--surface); padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+.ftr-arrow { position: sticky; bottom: 0; z-index: 2; flex-shrink: 0; padding: 0 20px calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; }
+.theme-white .ftr-arrow { background: var(--surface); }
 .ftr-arrow .spacer { height: 44px; display: flex; align-items: flex-end; justify-content: center; font-size: 11px; font-weight: 700; opacity: .8; }
 .hint { margin-top: 4px; text-align: center; font-size: 12px; color: var(--ink-tertiary); }
 

@@ -452,7 +452,7 @@
   // ----------------------------------------------------------------------- //
   // 화면 이동
   // ----------------------------------------------------------------------- //
-  const THEME = { notice: 'gradient', intro: 'gradient', done: 'gradient', analyzing: 'black' };
+  const THEME = { notice: 'gradient', intro: 'gradient', check_intro: 'gradient', done: 'gradient', analyzing: 'black' };
   const THEME_COLOR = { gradient: '#96C93E', black: '#000000', white: '#ffffff' };
   const STEP2 = /^(check_\d|analyzing|result_\d|action|done)$/;
   let cur = null;
@@ -464,13 +464,34 @@
     if (Date.now() - shownAt < TAP_GUARD_MS) { e.stopPropagation(); e.preventDefault(); }
   }, true);
 
+  /** 휴대폰에서 주소창 가리기(2026-11-27): 버튼을 누를 때 전체 화면으로 바꾼다(안드로이드 크롬·삼성 인터넷).
+   *  전체 화면은 사용자가 누른 순간에만 요청할 수 있다. 뒤로 가기 등으로 풀리면 다음 누를 때 다시 바꾼다.
+   *  아이폰은 웹 페이지가 전체 화면을 쓸 수 없어(요청 함수 없음) 건너뛴다. 대신 페이지 자체가 스크롤되게 해
+   *  밀어 올리면 브라우저가 주소창·하단 막대를 접는다(app.css 화면 틀). PC·태블릿은 바꾸지 않는다 */
+  const Fullscreen = (() => {
+    const el = document.documentElement;
+    const phone = () => !!(window.matchMedia && matchMedia('(pointer: coarse)').matches)
+      && Math.min(window.screen.width, window.screen.height) < 600;
+    function request() {
+      try {
+        if (!el.requestFullscreen || !document.fullscreenEnabled || document.fullscreenElement || !phone()) return;
+        const p = el.requestFullscreen({ navigationUI: 'hide' });
+        if (p && p.catch) p.catch(() => { /* 앱 안 브라우저 등에서 거절되면 그대로 둔다 */ });
+      } catch (e) { /* 무시 */ }
+    }
+    return { request };
+  })();
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest && e.target.closest('button, a')) Fullscreen.request();
+  }, true);
+
   function show(screen, opt) {
     const o = opt || {};
     if (gone) return;
     if (!o.keep) shownAt = Date.now();
     // 순서가 맞지 않는 화면 요청은 갈 수 있는 화면으로 바꾼다
     if (screen !== 'notice' && screen !== 'leader_name' && !S.me) screen = 'notice';
-    if ((screen === 'member' || STEP2.test(screen)) && !S.step1.done) screen = 'intro';
+    if ((screen === 'check_intro' || screen === 'member' || STEP2.test(screen)) && !S.step1.done) screen = 'intro';
     if (STEP2.test(screen) && !S.check) screen = 'member';
     if (/^(result_\d|action|done)$/.test(screen) && !(S.check.results && S.check.results.r1)) screen = 'analyzing';
     token += 1;
@@ -484,11 +505,10 @@
       const i = nodes.findIndex((n) => n.classList && n.classList.contains('main'));
       nodes.splice(i < 0 ? 1 : i, 0, bannerEl(o.banner));
     }
-    const oldMain = $screen.querySelector('.main');
-    const keepScroll = o.keep && oldMain ? oldMain.scrollTop : 0;
+    // 페이지 자체가 스크롤된다(2026-11-27, 휴대폰 브라우저가 주소창을 접을 수 있게). 같은 화면 다시 그리기는 위치 유지
+    const keepScroll = o.keep ? window.scrollY : 0;
     $screen.replaceChildren(...nodes);
-    const main = $screen.querySelector('.main');
-    if (main) main.scrollTop = keepScroll;
+    window.scrollTo(0, keepScroll);
     if (!o.initial && !o.keep) {
       const h1 = $screen.querySelector('h1');
       if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
@@ -507,7 +527,8 @@
     let m = /^review_(\d)$/.exec(s);
     if (m) return m[1] === '1' ? 'intro' : `review_${m[1] - 1}`;
     if (s === 'keyword') return 'review_5';
-    if (s === 'member') return 'keyword';
+    if (s === 'check_intro') return 'keyword';
+    if (s === 'member') return 'check_intro';
     m = /^check_(\d)$/.exec(s);
     if (m) return m[1] === '1' ? 'member' : `check_${m[1] - 1}`;
     if (s === 'analyzing' || s === 'result_1') return 'check_5';   // 결과에서 뒤로 가면 결과 정리를 건너뜀
@@ -756,7 +777,7 @@
         S.kw.forEach((k, i) => Events.track('keyword_pick', { keyword: k, order: i + 1, position: all.findIndex((x) => x.id === k) + 1 }));
       }
       S.me.locked = true;
-      go('member');
+      go('check_intro');
     }, { hint: K.blocked_hint });
     function update() {
       const n = S.kw.filter((x) => x !== NONE).length;
@@ -782,6 +803,18 @@
           h('div', { style: 'display:flex;align-items:center;justify-content:space-between' }, h('h2', { class: 'sec-h' }, K.section), count),
           h('div', { class: 'chips' }, chips.map((c) => c.b)))),
       foot.el,
+    ];
+  };
+
+  // 9-1 점검 시작 안내(2026-11-27 추가) — 퀵 리뷰 시작(intro)과 같은 디자인 ---------------
+  RENDER.check_intro = () => {
+    const I = C.check_intro;
+    return [
+      header(I.step),
+      h('main', { class: 'main center' },
+        h('h1', { class: 'h1 lg' }, rich(I.title)),
+        h('p', { style: 'font-size:13px;font-weight:700' }, I.note)),
+      arrowFooter(UI.check_intro_next_aria, () => go('member')).el,
     ];
   };
 

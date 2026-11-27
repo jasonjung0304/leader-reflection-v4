@@ -7,7 +7,7 @@
     "leader_name_token": "[리더명]",
     "change_2026_11_25": "Vercel 배포, 로그인 없음, 개인정보(이름·사번·이메일·소속) 미수집. 리더명 화면 추가",
     "change_2026_11_26": "4단계 화면 구현: 디자인 파일에만 있던 화면 문구(핵심 메시지 상세, 공통 UI, 키워드·별명·결과 보조 문구)를 옮겨 옴. 결과 3 제목용 items[].next_label, ui.storage_unavailable·save_error 등은 새로 쓴 초안(검토 필요)",
-    "change_2026_11_27": "검토 필요 초안 추가: 부족 신호 s1~s4 의 advice·phrase·next_label, general_phrases.all_done, results.r3.signal_cap·keep_cap·empty 수정, action.custom_note 수정, ui.resume_banner·switch_leader·switch_leader_confirm. (중간 이슈) results.r1.signal_low·axis_names, notice.resume_note 수정·inapp_hint, done.inapp_note. (낮음 이슈) results.r2.low_axis_cap, action.item_option_label·general_option_label, leader_name.custom.name_like / 1월 목표설정 면담 맞춤(2026-11-27 적용, docs/drafts/goal-setting-phrases-draft.md): action.title·custom_placeholder, results.r3.phrase_label, done.phrase_label·keep_note, situation_phrases 7, items[].phrase 17, general_phrases.all_done. 화면 하단 ui.credit"
+    "change_2026_11_27": "검토 필요 초안 추가: 부족 신호 s1~s4 의 advice·phrase·next_label, general_phrases.all_done, results.r3.signal_cap·keep_cap·empty 수정, action.custom_note 수정, ui.resume_banner·switch_leader·switch_leader_confirm. (중간 이슈) results.r1.signal_low·axis_names, notice.resume_note 수정·inapp_hint, done.inapp_note. (낮음 이슈) results.r2.low_axis_cap, action.item_option_label·general_option_label, leader_name.custom.name_like / 1월 목표설정 면담 맞춤(2026-11-27 적용, docs/drafts/goal-setting-phrases-draft.md): action.title·custom_placeholder, results.r3.phrase_label, done.phrase_label·keep_note, situation_phrases 7, items[].phrase 17, general_phrases.all_done. 화면 하단 ui.credit / 키워드 버튼 '퀵! 리뷰 끝내기', 새 화면 check_intro(점검 시작 안내)·ui.check_intro_next_aria"
   },
   "notice": {
     "eyebrow": "팀장 리더십 리플렉션",
@@ -391,9 +391,15 @@
     "sub": "1개 이상, 최대 3개까지 고를 수 있어요.",
     "section": "키워드",
     "count": "{n}/3 선택",
-    "cta": "면담 스타일 점검하기",
+    "cta": "퀵! 리뷰 끝내기",
     "blocked_hint": "1개 이상 골라 주세요.",
     "min_done_rule": "연결 문항 중 '했어요'가 min_done 개 이상이면 이번 면담에서 '했어요'"
+  },
+  "check_intro": {
+    "_note": "키워드 다음, 구성원 떠올리기 전 안내(2026-11-27 추가). 퀵 리뷰 시작(intro)과 같은 디자인",
+    "step": "STEP 2 · 면담 스타일 점검",
+    "title": "이제 본격적으로\n면담 스타일을\n점검해볼까요?",
+    "note": "개인정보 수집항목이 없는 자가점검입니다."
   },
   "member": {
     "step": "STEP 2 · 면담 스타일 점검",
@@ -962,6 +968,7 @@
     "check_last_cta": "결과 보기",
     "notice_next_aria": "시작하기",
     "intro_next_aria": "리뷰 시작하기",
+    "check_intro_next_aria": "점검 시작하기",
     "review_overline": "핵심 메시지 {n}",
     "recall_group_aria": "이 내용이 기억나나요?",
     "tool_prefix": "교육 도구 · ",

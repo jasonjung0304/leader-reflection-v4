@@ -120,3 +120,20 @@ def test_footer_shows_team_not_version():
     assert C["ui"]["credit"] == "Culture팀"
     footer = C["done"]["pdf"]["footer"]
     assert "{credit}" in footer and "{version}" not in footer
+
+
+def test_check_intro_screen_between_keyword_and_member():
+    """2026-11-27: 키워드 버튼은 '퀵! 리뷰 끝내기', 다음에 점검 시작 안내(check_intro)를 하나 더 둔다.
+    화면 기록(screen_view)이 받아지고 관리자 화면별 통계에도 이름이 있어야 한다."""
+    import json
+
+    import admin_stats
+    assert C["keywords"]["cta"] == "퀵! 리뷰 끝내기"
+    ci = C["check_intro"]
+    assert ci["title"].replace("\n", " ") == "이제 본격적으로 면담 스타일을 점검해볼까요?"
+    assert ci["note"] == "개인정보 수집항목이 없는 자가점검입니다."
+    assert ci["step"] == C["member"]["step"] and C["ui"]["check_intro_next_aria"]
+    for screens in (main.SCREEN_IDS, admin_stats.SCREENS):
+        assert screens.index("check_intro") == screens.index("keyword") + 1 == screens.index("member") - 1
+    labels = json.loads((main.BASE_DIR / "content" / "admin.json").read_text(encoding="utf-8"))["screens"]
+    assert set(labels) == set(admin_stats.SCREENS)

@@ -360,7 +360,7 @@ def update_leader_name(body: LeaderNameIn, pc=Depends(require_participant)) -> d
 # --------------------------------------------------------------------------- #
 SCREEN_IDS = (
     "notice", "leader_name", "intro",
-    "review_1", "review_2", "review_3", "review_4", "review_5", "keyword",
+    "review_1", "review_2", "review_3", "review_4", "review_5", "keyword", "check_intro",
     "member", "check_1", "check_2", "check_3", "check_4", "check_5",
     "analyzing", "result_1", "result_2", "result_3", "action", "done",
 )

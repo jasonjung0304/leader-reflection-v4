@@ -23,6 +23,7 @@ KST = dt.timezone(dt.timedelta(hours=9))
 QUADS = ("rc", "re", "oa", "mi")
 TYPES = ("rc", "re", "oa", "mi", "custom")
 SCREENS = ("notice", "leader_name", "intro", "review_1", "review_2", "review_3", "review_4", "review_5", "keyword",
+           "check_intro",
            "member", "check_1", "check_2", "check_3", "check_4", "check_5", "analyzing", "result_1", "result_2",
            "result_3", "action", "done")
 PRE_NAME = ("notice", "leader_name")                 # 리더명 전 화면 → 기기 기준
