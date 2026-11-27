@@ -77,3 +77,14 @@ def test_version_from_vercel_commit(monkeypatch):
     monkeypatch.delenv("APP_VERSION", raising=False)
     monkeypatch.setenv("VERCEL_GIT_COMMIT_SHA", "abcdef1234567")
     assert main.app_version() == "dev-abcdef1"
+
+
+def test_events_sent_without_entry_key_when_open_entry():
+    """2026-11-27 회귀 방지: 키 없는 기본 주소(입장 키 없이 들어오기)에서도 화면이 이벤트를 보내야 한다.
+    예전 app.js 는 입장 키가 없으면 이벤트를 아예 보내지 않아 관리자 '사용 흐름'·단계별 인원이 비었다."""
+    from pathlib import Path
+    js = (Path(__file__).resolve().parent.parent / "public" / "app.js").read_text(encoding="utf-8")
+    flush = js[js.index("function flush("): js.index("function track(")]
+    assert "if (!q.length || !S.entryKey) return;" not in flush
+    assert "open_entry" in flush
+    assert "'X-Entry-Key': S.entryKey }" not in flush   # 키가 없으면 헤더를 빼고 보낸다

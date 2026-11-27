@@ -28,6 +28,7 @@ from typing import Annotated, Any, Literal, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi import Path as PathParam
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import select, text
@@ -117,6 +118,14 @@ def error(status: int, code: str, message: Optional[str] = None) -> HTTPExceptio
 async def http_error(_: Request, exc: HTTPException) -> JSONResponse:
     body = exc.detail if isinstance(exc.detail, dict) else {"error": str(exc.detail)}
     return JSONResponse(body, status_code=exc.status_code, headers={"Cache-Control": "no-store"})
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
+    """형식이 틀린 요청(422). 받은 값은 되돌려 주지 않고 위치·종류만 알려 준다(2026-11-27).
+    FastAPI 기본 응답은 받은 값을 그대로 담는데, Infinity 같은 값이 섞이면 응답을 만들다 500 이 났다."""
+    detail = [{"loc": [str(p) for p in (e.get("loc") or ())], "type": str(e.get("type", ""))} for e in exc.errors()][:20]
+    return JSONResponse({"error": "invalid_request", "detail": detail}, status_code=422, headers={"Cache-Control": "no-store"})
 
 
 def valid_uuid(value: Optional[str]) -> Optional[str]:

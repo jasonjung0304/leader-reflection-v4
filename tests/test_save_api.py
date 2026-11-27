@@ -250,3 +250,18 @@ def test_screen_view_props_kept(client, pid):
 
 def test_content_sends_dwell_cutoff(client):
     assert client.get("/api/content", headers=hdr()).json()["settings"]["dwell_cutoff_sec"] == 180
+
+
+@pytest.mark.parametrize("body", [
+    '{"events":[{"name":"x","props":{"a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"h":8,"i":9,"j":10,"k":Infinity}}]}',
+    '{"events":[{"name":"x","props":{"v":NaN},"check_seq":0}]}',
+    '{"events":"not a list","extra":Infinity}',
+])
+def test_malformed_request_is_422_not_500(client, body):
+    """2026-11-27 무작위 시뮬레이션: 형식이 틀린 요청에 Infinity·NaN 이 섞이면 기본 422 응답을 만들다 500 이 났다.
+    이제 받은 값은 되돌려 주지 않고 오류 위치·종류만 담은 422."""
+    r = client.post("/api/events", content=body, headers={**hdr(), "Content-Type": "application/json"})
+    assert r.status_code == 422
+    out = r.json()
+    assert out["error"] == "invalid_request" and out["detail"]
+    assert "Infinity" not in r.text and "input" not in r.text

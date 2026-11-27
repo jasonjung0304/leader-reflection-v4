@@ -303,13 +303,16 @@
     const MAX_QUEUE = 300;
     const requeue = (batch) => { q.unshift(...batch.slice(0, Math.max(0, MAX_QUEUE - q.length))); };
     function flush(keepalive) {
-      if (!q.length || !S.entryKey) return;
+      // 입장 키가 있거나 '입장 키 없이 들어오기'가 켜져 있으면 보낸다(2026-11-27 수정: 키 없는 기본 주소에서
+      // 이벤트가 하나도 저장되지 않던 문제). 둘 다 아니면 서버가 거절하므로 보내지 않는다
+      if (!q.length || !(S.entryKey || (S.settings && S.settings.open_entry))) return;
       // 이벤트가 생긴 때의 참여자 ID 로 보낸다(리더명을 정하기 전 이벤트는 기기 ID 로만 남게)
       const pid = q[0].pid;
       let n = 0;
       while (n < q.length && n < 50 && q[n].pid === pid) n += 1;
       const batch = q.splice(0, n);
-      const headers = { 'Content-Type': 'application/json', 'X-Entry-Key': S.entryKey };
+      const headers = { 'Content-Type': 'application/json' };
+      if (S.entryKey) headers['X-Entry-Key'] = S.entryKey;
       if (pid) headers['X-Participant-Id'] = pid;
       if (S.deviceId) headers['X-Device-Id'] = S.deviceId;
       const events = batch.map((e) => ({ name: e.name, props: e.props, session_id: e.session_id, check_seq: e.check_seq }));
