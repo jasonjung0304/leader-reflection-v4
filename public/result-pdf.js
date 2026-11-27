@@ -247,7 +247,7 @@ window.ResultPdf = (() => {
     // 꼭 해야 하는 말 (실천에서 고른 문장)
     if (d.phrase) {
       doc.y += 10;
-      phraseBox(doc, toRuns(C.done.phrase_label.replace('\n', ' '), ctx), d.phrase);
+      phraseBox(doc, toRuns(C.done.phrase_label.replace(/\n/g, ' '), ctx), d.phrase);   // 화면용 줄바꿈은 모두 띄어쓰기로
     }
 
     // 바닥글(쪽마다)
